@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './modules/users/users.module'; // Import your modules here
+import { UsersModule } from './modules/user/user.module'; // Import your modules here
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { UsersModule } from './modules/users/users.module'; // Import your modul
     //   autoLoadEntities: true,
     //   synchronize: true,
     // }),
-    UsersModule, // Add your modules here
+    UsersModule,
+    AuthModule, // Add your modules here
   ],
   //   controllers: [UsersController], // Add your controllers here
   //   providers: [AppService], // Add your services here
