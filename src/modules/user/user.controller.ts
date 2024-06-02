@@ -16,11 +16,11 @@ export class UsersController {
   constructor(private userService: UserService) {}
 
   @Get('/:id')
-  getUserById(@Query() query: any, @Param('id', ParseIntPipe) param: any) {
-    const id = +param.id;
-    console.log(query, id);
+  getUserById(@Query() query: any, @Param('id', ParseIntPipe) param: number) {
+    const id = param;
+    // console.log(param);
 
-    const user = this.userService.getUserById();
+    const user = this.userService.getUserById(id);
     return user;
   }
 
