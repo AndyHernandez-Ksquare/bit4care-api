@@ -5,7 +5,7 @@ async function main() {
   const user1 = await prisma.user.create({
     data: {
       name: 'John Doe',
-      email: 'john.doe@example.com',
+      email: `${Math.random()}john.doe@example.com`,
       password: 'password123',
       role: UserRole.USER,
     },
@@ -14,7 +14,7 @@ async function main() {
   const user2 = await prisma.user.create({
     data: {
       name: 'Jane Smith',
-      email: 'jane.smith@example.com',
+      email: `${Math.random()}jane.smith@example.com`,
       password: 'password456',
       role: UserRole.ADMIN,
     },
