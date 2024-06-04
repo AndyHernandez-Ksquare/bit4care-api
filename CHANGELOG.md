@@ -1,0 +1,1 @@
+- JWT authentication setup. [PR-1](https://github.com/SERGIOALGO/bit4care-api/pull/1)
