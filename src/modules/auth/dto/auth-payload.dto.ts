@@ -1,11 +1,4 @@
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-} from 'class-validator';
-import { UserRole } from 'src/common/enums';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class AuthPayloadDto {
   @IsEmail()

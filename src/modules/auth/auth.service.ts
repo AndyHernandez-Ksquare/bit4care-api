@@ -1,8 +1,6 @@
 // src/auth/auth.service.ts
-import { HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import * as bcrypt from 'bcryptjs';
 import { AuthPayloadDto } from './dto/auth-payload.dto';
 import { PrismaService } from 'src/prisma.service';
 
@@ -18,7 +16,7 @@ export class AuthService {
     password,
   }: AuthPayloadDto): Promise<string | null> {
     const user = await this.prisma.user.findUnique({
-      where: { email: email },
+      where: { email },
     });
 
     if (!user) return null;
@@ -30,6 +28,6 @@ export class AuthService {
         sub: user.id,
       });
     }
-    return null;
+    throw new BadRequestException('Invalid credentials');
   }
 }
