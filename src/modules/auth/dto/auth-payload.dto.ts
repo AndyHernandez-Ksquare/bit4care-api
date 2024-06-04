@@ -7,11 +7,7 @@ import {
 } from 'class-validator';
 import { UserRole } from 'src/common/enums';
 
-export class CreateUserDto {
-  @IsString()
-  @MinLength(4)
-  name: string;
-
+export class AuthPayloadDto {
   @IsEmail()
   @MinLength(4)
   email: string;
@@ -19,8 +15,4 @@ export class CreateUserDto {
   @IsString()
   @MinLength(4)
   password: string;
-
-  @IsNotEmpty()
-  @IsEnum(UserRole)
-  role: UserRole;
 }
