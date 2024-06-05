@@ -6,6 +6,7 @@ async function main() {
   await prisma.user.deleteMany({});
   await prisma.stripeAccount.deleteMany({});
   await prisma.allowedPaymentMethod.deleteMany({});
+  await prisma.carerProfile.deleteMany({}); // Ensure carer profiles are cleared
 
   // Create allowed payment methods
   const allowedPaymentMethod1 = await prisma.allowedPaymentMethod.create({
@@ -37,7 +38,35 @@ async function main() {
     },
   });
 
-  // Create users with payment history and stripe accounts
+  // Create carer profiles
+  const carerProfile1 = await prisma.carerProfile.create({
+    data: {
+      payment_range: 'High',
+      availability: 'Full-time',
+      qualifications: 'Certified',
+      isFavorite: true,
+      worksOnWeekend: true,
+      residency_status: 'Permanent',
+      years_of_experience: '5',
+      speciality: 'Pediatrics',
+      motivation_letter: 'Passionate about caregiving',
+      test_score: 90,
+      isActive: true,
+      workedHours: 1000,
+      description: 'Experienced caregiver',
+      completed_services: 50,
+    },
+  });
+
+  const carerReview1 = await prisma.carerReview.create({
+    data: {
+      carerId: carerProfile1.id,
+      stars: 4,
+      comment: 'Great experience',
+    },
+  });
+
+  // Create users with payment history, carer profiles, and stripe accounts
   const user1 = await prisma.user.create({
     data: {
       name: 'John Doe',
@@ -45,6 +74,7 @@ async function main() {
       password: 'password123',
       role: UserRole.USER,
       stripeAccountId: stripeAccount1.id,
+      carerId: carerProfile1.id,
       paymentHistory: {
         create: [
           {
@@ -60,27 +90,6 @@ async function main() {
             payment_method: allowedPaymentMethod2.payment_method,
             creation_date: new Date(),
             description: 'Payment for order #124',
-          },
-        ],
-      },
-    },
-  });
-
-  const user2 = await prisma.user.create({
-    data: {
-      name: 'Jane Smith',
-      email: `${Math.random()}jane.smith@example.com`,
-      password: 'password456',
-      role: UserRole.ADMIN,
-      stripeAccountId: stripeAccount2.id,
-      paymentHistory: {
-        create: [
-          {
-            status: 'Completed',
-            amount: '200.00',
-            payment_method: allowedPaymentMethod1.payment_method,
-            creation_date: new Date(),
-            description: 'Payment for order #125',
           },
         ],
       },
