@@ -53,36 +53,40 @@ model AllowedPaymentMethod {
 }
 
 model StripeAccount {
-  id                           Int    @id @default(autoincrement())
-  stripe_customer_id           String @unique
+  id                           Int     @id @default(autoincrement())
+  stripe_customer_id           String  @unique
   default_payment_method_token String
   additional_payment_methods   Int
   user                         User?
+  Client                       Client?
 }
 
 model CarerProfile {
-  id                  Int           @id @default(autoincrement())
+  id                  Int                  @id @default(autoincrement())
   payment_range       String
   availability        String
   qualifications      String
   isFavorite          Boolean
-  worksOnWeekend      Boolean
+  works_on_weekend    Boolean
   residency_status    String
   years_of_experience String
   speciality          String
   motivation_letter   String
   test_score          Int
-  isActive            Boolean
-  workedHours         Int
+  is_active           Boolean
+  worked_hours        Int
   description         String
   completed_services  Int
   carerReviews        CarerReview[]
   User                User?
+  ApplicationRequest  ApplicationRequest[]
 }
 
 model Address {
-  id      Int    @id @default(autoincrement())
-  address String
+  id                 Int                  @id @default(autoincrement())
+  address            String
+  Client             Client[]
+  ApplicationRequest ApplicationRequest[]
 }
 
 model CarerReview {
@@ -91,4 +95,34 @@ model CarerReview {
   comment String
   carerId Int
   carer   CarerProfile @relation(fields: [carerId], references: [id])
+}
+
+model Client {
+  id                Int            @id @default(autoincrement())
+  email             String
+  phone             String
+  confirmation_code String
+  password          String
+  is_active         Boolean
+  addressId         Int
+  address           Address        @relation(fields: [addressId], references: [id])
+  stripeAccountId   Int?           @unique
+  stripeAccount     StripeAccount? @relation(fields: [stripeAccountId], references: [id])
+  ApplicationRequest ApplicationRequest?
+}
+
+model ApplicationRequest {
+  id            Int          @id @default(autoincrement())
+  time_range    String
+  addressId     Int
+  address       Address      @relation(fields: [addressId], references: [id])
+  patient_name  String
+  patient_phone String
+  clientId      Int?         @unique
+  client        Client?      @relation(fields: [clientId], references: [id])
+  description   String
+  comments      String
+  amount        Int
+  carerId       Int
+  carer         CarerProfile @relation(fields: [carerId], references: [id])
 }

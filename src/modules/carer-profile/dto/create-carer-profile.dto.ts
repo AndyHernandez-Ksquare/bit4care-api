@@ -24,7 +24,7 @@ export class CreateCarerProfileDto implements CarerProfile {
   isFavorite: boolean;
 
   @IsBoolean()
-  worksOnWeekend: boolean;
+  works_on_weekend: boolean;
 
   @IsString()
   residency_status: string;
@@ -42,10 +42,10 @@ export class CreateCarerProfileDto implements CarerProfile {
   test_score: number;
 
   @IsBoolean()
-  isActive: boolean;
+  is_active: boolean;
 
   @IsInt()
-  workedHours: number;
+  worked_hours: number;
 
   @IsString()
   description: string;
