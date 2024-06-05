@@ -1,9 +1,10 @@
 // src/payment-history/dto/create-payment-history.dto.ts
 import { IsString, IsInt, IsDate } from 'class-validator';
+import { PaymentHistory } from '@prisma/client';
 
-export class CreatePaymentHistoryDto {
+export class CreatePaymentHistoryDto implements PaymentHistory {
   @IsInt()
-  account_id: number;
+  id: number;
 
   @IsString()
   status: string;
@@ -13,6 +14,9 @@ export class CreatePaymentHistoryDto {
 
   @IsString()
   payment_method: string;
+
+  @IsInt()
+  userId: number;
 
   @IsDate()
   creation_date: Date;

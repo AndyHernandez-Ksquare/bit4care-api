@@ -1,37 +1,37 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { User } from '@prisma/client';
-import { UserRole } from 'src/common/enums';
+// import { ApiProperty } from '@nestjs/swagger';
+// import { User } from '@prisma/client';
+// import { UserRole } from 'src/common/enums';
 
-export class UserEntity implements User {
-  @ApiProperty()
-  id: number;
+// export class UserEntity implements User {
+//   @ApiProperty()
+//   id: number;
 
-  @ApiProperty()
-  name: string;
+//   @ApiProperty()
+//   name: string;
 
-  @ApiProperty()
-  lastName: string;
+//   @ApiProperty()
+//   lastName: string;
 
-  @ApiProperty()
-  phone: string;
+//   @ApiProperty()
+//   phone: string;
 
-  @ApiProperty()
-  privacySettingsId: number;
+//   @ApiProperty()
+//   privacySettingsId: number;
 
-  @ApiProperty()
-  address: string;
+//   @ApiProperty()
+//   address: string;
 
-  @ApiProperty({ enum: UserRole })
-  role: UserRole;
+//   @ApiProperty({ enum: UserRole })
+//   role: UserRole;
 
-  @ApiProperty()
-  email: string;
+//   @ApiProperty()
+//   email: string;
 
-  password: string;
+//   password: string;
 
-  @ApiProperty()
-  createdAt: Date;
+//   @ApiProperty()
+//   createdAt: Date;
 
-  @ApiProperty()
-  updatedAt: Date;
-}
+//   @ApiProperty()
+//   updatedAt: Date;
+// }

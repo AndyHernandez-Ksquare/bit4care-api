@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentHistoryDto } from './dto/create-payment-history.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
+import { UpdatePaymentDto } from './dto/update-stripe-account.dto';
 
 @Controller('payments')
 export class PaymentsController {

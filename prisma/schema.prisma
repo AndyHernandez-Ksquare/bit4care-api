@@ -24,6 +24,8 @@ model User {
   email     String   @unique
   password  String?
   role      UserRole @default(USER)
+  stripeAccountId      Int?        @unique
+  stripeAccount        StripeAccount? @relation(fields: [stripeAccountId], references: [id])
   paymentHistory PaymentHistory[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -36,7 +38,7 @@ model PaymentHistory {
   payment_method  String
   creation_date   DateTime
   description     String
-  userId          Int
+  userId          Int               
   user            User              @relation(fields: [userId], references: [id])
   allowedMethod   AllowedPaymentMethod @relation(fields: [payment_method], references: [payment_method])
 }
@@ -45,5 +47,13 @@ model AllowedPaymentMethod {
   id        Int      @id @default(autoincrement())
   payment_method String @unique
   PaymentHistory PaymentHistory[]
+}
+
+model StripeAccount {
+  id        Int      @id @default(autoincrement())
+  stripe_customer_id       String @unique
+  default_payment_method_token String
+  additional_payment_methods Int
+  user                     User?
 }
 
