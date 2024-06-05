@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
-import { CreatePaymentDto } from './dto/create-payment-history.dto';
+import { CreatePaymentHistoryDto } from './dto/create-payment-history.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 
 @Controller('payments')
@@ -16,7 +16,7 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post()
-  create(@Body() createPaymentDto: CreatePaymentDto) {
+  create(@Body() createPaymentDto: CreatePaymentHistoryDto) {
     return this.paymentsService.create(createPaymentDto);
   }
 
