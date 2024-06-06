@@ -1,12 +1,29 @@
 import { PrismaClient, UserRole } from '@prisma/client';
+require('dotenv').config();
+
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.paymentHistory.deleteMany({});
-  await prisma.user.deleteMany({});
-  await prisma.stripeAccount.deleteMany({});
-  await prisma.allowedPaymentMethod.deleteMany({});
-  await prisma.carerProfile.deleteMany({}); // Ensure carer profiles are cleared
+  if (process.env.NODE_ENV !== 'dev') {
+    console.log('Can only execute this on dev mode');
+    return;
+  }
+  // Disable foreign key checks
+  await prisma.$executeRaw`SET session_replication_role = 'replica';`;
+
+  // Truncate tables
+  await prisma.$executeRaw`TRUNCATE TABLE "PaymentHistory" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "User" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "StripeAccount" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "AllowedPaymentMethod" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "CarerProfile" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "Client" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "Address" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "ApplicationRequest" RESTART IDENTITY CASCADE;`;
+  await prisma.$executeRaw`TRUNCATE TABLE "CarerReview" RESTART IDENTITY CASCADE;`;
+
+  // Re-enable foreign key checks
+  await prisma.$executeRaw`SET session_replication_role = 'origin';`;
 
   // Create allowed payment methods
   const allowedPaymentMethod1 = await prisma.allowedPaymentMethod.create({
@@ -63,6 +80,41 @@ async function main() {
       carerId: carerProfile1.id,
       stars: 4,
       comment: 'Great experience',
+    },
+  });
+
+  // Create address
+  const address1 = await prisma.address.create({
+    data: {
+      address: '123 Main St, Springfield',
+    },
+  });
+
+  // Create client
+  const client1 = await prisma.client.create({
+    data: {
+      email: 'client@example.com',
+      phone: '555-1234',
+      confirmation_code: 'CONF123',
+      password: 'password456',
+      is_active: true,
+      addressId: address1.id,
+      stripeAccountId: stripeAccount2.id,
+    },
+  });
+
+  // Create application request
+  const applicationRequest1 = await prisma.applicationRequest.create({
+    data: {
+      time_range: '9 AM - 5 PM',
+      addressId: address1.id,
+      patient_name: 'Jane Doe',
+      patient_phone: '555-5678',
+      clientId: client1.id,
+      description: 'Assistance with daily tasks',
+      comments: 'Prefer morning hours',
+      amount: 200,
+      carerId: carerProfile1.id,
     },
   });
 

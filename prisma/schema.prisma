@@ -32,6 +32,8 @@ model User {
   paymentHistory  PaymentHistory[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  Address         Address?         @relation(fields: [addressId], references: [id])
+  addressId       Int?
 }
 
 model PaymentHistory {
@@ -85,6 +87,7 @@ model CarerProfile {
 model Address {
   id                 Int                  @id @default(autoincrement())
   address            String
+  User               User[]
   Client             Client[]
   ApplicationRequest ApplicationRequest[]
 }
@@ -98,16 +101,16 @@ model CarerReview {
 }
 
 model Client {
-  id                Int            @id @default(autoincrement())
-  email             String
-  phone             String
-  confirmation_code String
-  password          String
-  is_active         Boolean
-  addressId         Int
-  address           Address        @relation(fields: [addressId], references: [id])
-  stripeAccountId   Int?           @unique
-  stripeAccount     StripeAccount? @relation(fields: [stripeAccountId], references: [id])
+  id                 Int                 @id @default(autoincrement())
+  email              String
+  phone              String
+  confirmation_code  String
+  password           String
+  is_active          Boolean
+  addressId          Int
+  address            Address             @relation(fields: [addressId], references: [id])
+  stripeAccountId    Int?                @unique
+  stripeAccount      StripeAccount?      @relation(fields: [stripeAccountId], references: [id])
   ApplicationRequest ApplicationRequest?
 }
 
