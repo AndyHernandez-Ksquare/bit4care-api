@@ -15,16 +15,117 @@ datasource db {
 
 enum UserRole {
   USER
+  CARER
   ADMIN
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String?
-  role      UserRole @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int              @id @default(autoincrement())
+  name            String
+  email           String           @unique
+  password        String?
+  role            UserRole         @default(USER)
+  stripeAccountId Int?             @unique
+  stripeAccount   StripeAccount?   @relation(fields: [stripeAccountId], references: [id])
+  carerId         Int              @unique
+  carer           CarerProfile     @relation(fields: [carerId], references: [id])
+  paymentHistory  PaymentHistory[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  Address         Address?         @relation(fields: [addressId], references: [id])
+  addressId       Int?
 }
 
+model PaymentHistory {
+  id             Int                  @id @default(autoincrement())
+  status         String
+  amount         String
+  payment_method String
+  creation_date  DateTime
+  description    String
+  userId         Int
+  user           User                 @relation(fields: [userId], references: [id])
+  allowedMethod  AllowedPaymentMethod @relation(fields: [payment_method], references: [payment_method])
+}
+
+model AllowedPaymentMethod {
+  id             Int              @id @default(autoincrement())
+  payment_method String           @unique
+  PaymentHistory PaymentHistory[]
+}
+
+model StripeAccount {
+  id                           Int     @id @default(autoincrement())
+  stripe_customer_id           String  @unique
+  default_payment_method_token String
+  additional_payment_methods   Int
+  user                         User?
+  Client                       Client?
+}
+
+model CarerProfile {
+  id                  Int                  @id @default(autoincrement())
+  payment_range       String
+  availability        String
+  qualifications      String
+  isFavorite          Boolean
+  works_on_weekend    Boolean
+  residency_status    String
+  years_of_experience String
+  speciality          String
+  motivation_letter   String
+  test_score          Int
+  is_active           Boolean
+  worked_hours        Int
+  description         String
+  completed_services  Int
+  carerReviews        CarerReview[]
+  User                User?
+  ApplicationRequest  ApplicationRequest[]
+}
+
+model Address {
+  id                 Int                  @id @default(autoincrement())
+  address            String
+  User               User[]
+  Client             Client[]
+  ApplicationRequest ApplicationRequest[]
+}
+
+model CarerReview {
+  id      Int          @id @default(autoincrement())
+  stars   Int
+  comment String
+  carerId Int
+  carer   CarerProfile @relation(fields: [carerId], references: [id])
+}
+
+model Client {
+  id                 Int                 @id @default(autoincrement())
+  email              String
+  phone              String
+  confirmation_code  String
+  password           String
+  is_active          Boolean
+  addressId          Int
+  address            Address             @relation(fields: [addressId], references: [id])
+  stripeAccountId    Int?                @unique
+  stripeAccount      StripeAccount?      @relation(fields: [stripeAccountId], references: [id])
+  ApplicationRequest ApplicationRequest?
+}
+
+model ApplicationRequest {
+  id            Int          @id @default(autoincrement())
+  time_range    String
+  addressId     Int
+  address       Address      @relation(fields: [addressId], references: [id])
+  patient_name  String
+  patient_phone String
+  clientId      Int?         @unique
+  client        Client?      @relation(fields: [clientId], references: [id])
+  description   String
+  comments      String
+  amount        Int
+  carerId       Int
+  carer         CarerProfile @relation(fields: [carerId], references: [id])
+}

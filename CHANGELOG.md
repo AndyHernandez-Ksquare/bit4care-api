@@ -1,1 +1,2 @@
 - JWT authentication setup. [PR-1](https://github.com/SERGIOALGO/bit4care-api/pull/1)
+- Add tables based on db design. [PR-2](https://github.com/SERGIOALGO/bit4care-api/pull/2)
