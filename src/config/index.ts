@@ -11,4 +11,7 @@ export const config = {
   stripe: {
     secret: process.env.STRIPE_SECRET_KEY,
   },
+  security: {
+    encryptionKey: process.env.ENCRYPTION_KEY,
+  },
 };

@@ -1,5 +1,21 @@
 import { PrismaClient, UserRole } from '@prisma/client';
+import * as crypto from 'crypto';
 require('dotenv').config();
+
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY; // Must be 32 bytes (256 bits)
+const IV_LENGTH = 16; // For AES, this is always 16
+
+export const encrypt = (text: string): string => {
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv(
+    'aes-256-cbc',
+    Buffer.from(ENCRYPTION_KEY),
+    iv,
+  );
+  let encrypted = cipher.update(text);
+  encrypted = Buffer.concat([encrypted, cipher.final()]);
+  return iv.toString('hex') + ':' + encrypted.toString('hex');
+};
 
 const prisma = new PrismaClient();
 
@@ -123,7 +139,7 @@ async function main() {
     data: {
       name: 'John Doe',
       email: `john.doe@example.com`,
-      password: 'password123',
+      password: encrypt('password123'),
       role: UserRole.USER,
       stripeAccountId: stripeAccount1.id,
       carerId: carerProfile1.id,

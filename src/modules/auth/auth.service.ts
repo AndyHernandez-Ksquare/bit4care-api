@@ -23,9 +23,9 @@ export class AuthService {
 
     if (password === user.password) {
       return this.jwtService.sign({
-        username: user.email,
+        email: user.email,
         role: user.role,
-        sub: user.id,
+        id: user.id,
       });
     }
     throw new BadRequestException('Invalid credentials');

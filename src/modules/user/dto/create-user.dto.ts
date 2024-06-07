@@ -1,13 +1,7 @@
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-} from 'class-validator';
-import { UserRole } from 'src/common/enums';
+import { User } from '@prisma/client';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateUserDto implements Partial<User> {
   @IsString()
   @MinLength(4)
   name: string;
@@ -19,8 +13,4 @@ export class CreateUserDto {
   @IsString()
   @MinLength(4)
   password: string;
-
-  @IsNotEmpty()
-  @IsEnum(UserRole)
-  role: UserRole;
 }

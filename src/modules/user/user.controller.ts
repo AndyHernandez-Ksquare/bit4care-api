@@ -13,6 +13,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
+import { JwtPayload } from 'src/interfaces/jwt-payload';
 
 @Controller('user')
 export class UsersController {
@@ -30,12 +31,14 @@ export class UsersController {
   @Get('self')
   @UseGuards(JwtGuard)
   async getSelf(@Req() req: Request) {
-    return req.user;
+    const reqUser = req.user as JwtPayload;
+    const user = this.userService.getUserById(reqUser.id);
+    return user;
   }
 
   @Post()
   createUser(@Body() user: CreateUserDto) {
-    const createdUser = this.userService.createUser(user);
+    const createdUser = this.userService.register(user);
     return createdUser;
   }
 }

@@ -27,13 +27,13 @@ model User {
   role            UserRole         @default(USER)
   stripeAccountId Int?             @unique
   stripeAccount   StripeAccount?   @relation(fields: [stripeAccountId], references: [id])
-  carerId         Int              @unique
-  carer           CarerProfile     @relation(fields: [carerId], references: [id])
+  carerId         Int?             @unique
+  carer           CarerProfile?    @relation(fields: [carerId], references: [id])
   paymentHistory  PaymentHistory[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
   Address         Address?         @relation(fields: [addressId], references: [id])
   addressId       Int?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model PaymentHistory {
