@@ -1,2 +1,3 @@
 - JWT authentication setup. [PR-1](https://github.com/SERGIOALGO/bit4care-api/pull/1)
 - Add tables based on db design. [PR-2](https://github.com/SERGIOALGO/bit4care-api/pull/2)
+- Create dynamic stripe module (for possible use on other projects) and add logger to server. [PR-3](https://github.com/SERGIOALGO/bit4care-api/pull/3)
