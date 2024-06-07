@@ -122,7 +122,7 @@ async function main() {
   const user1 = await prisma.user.create({
     data: {
       name: 'John Doe',
-      email: `${Math.random()}john.doe@example.com`,
+      email: `john.doe@example.com`,
       password: 'password123',
       role: UserRole.USER,
       stripeAccountId: stripeAccount1.id,

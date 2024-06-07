@@ -1,42 +1,14 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { PaymentsService } from './payments.service';
-import { CreatePaymentHistoryDto } from './dto/create-payment-history.dto';
-import { UpdatePaymentDto } from './dto/update-stripe-account.dto';
+import { Controller, Get, Inject } from '@nestjs/common';
+import { STRIPE_CLIENT } from '../stripe/constants';
+import Stripe from 'stripe';
 
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(@Inject(STRIPE_CLIENT) private stripe: Stripe) {}
 
-  @Post()
-  create(@Body() createPaymentDto: CreatePaymentHistoryDto) {
-    return this.paymentsService.create(createPaymentDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.paymentsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentsService.update(+id, updatePaymentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentsService.remove(+id);
+  @Get('/')
+  listCustomers() {
+    // Test endpoint
+    return this.stripe.customers.list();
   }
 }
