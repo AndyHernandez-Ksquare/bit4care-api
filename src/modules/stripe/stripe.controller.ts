@@ -1,15 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { StripeService } from './stripe.service';
-import { CreatePaymentHistoryDto } from './dto/create-payment-history.dto';
-import { UpdatePaymentDto } from './dto/update-stripe-account.dto';
 
 @Controller('stripe')
 export class StripeController {

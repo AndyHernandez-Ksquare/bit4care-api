@@ -3,16 +3,19 @@ import { UsersModule } from './modules/user/user.module'; // Import your modules
 import { AuthModule } from './modules/auth/auth.module';
 import { CarerProfileModule } from './modules/carer-profile/carer-profile.module';
 import { ClientModule } from './modules/client/client.module';
-import { StripeModule } from '@golevelup/nestjs-stripe';
+import { StripeModule } from './modules/stripe/stripe.module';
+import { config } from './config';
+import { PaymentsController } from './modules/payments/payments.controller';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
-    StripeModule,
     CarerProfileModule,
     ClientModule,
+    StripeModule.forRoot(config.stripe.secret, { apiVersion: '2023-10-16' }),
   ],
+  controllers: [PaymentsController],
   //   controllers: [UsersController], // Add your controllers here
   //   providers: [AppService], // Add your services here
 })
