@@ -5,6 +5,8 @@ import { UpdateClientDto } from './dto/update-client.dto';
 @Injectable()
 export class ClientService {
   create(createClientDto: CreateClientDto) {
+    const confirmation_code = createClientDto.confirmation_code;
+    console.log(confirmation_code);
     return 'This action adds a new client';
   }
 

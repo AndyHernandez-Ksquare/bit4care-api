@@ -7,10 +7,7 @@ import {
 } from 'class-validator';
 import { Client } from '@prisma/client';
 
-export class CreateClientDto implements Client {
-  @IsInt()
-  id: number;
-
+export class CreateClientDto implements Partial<Client> {
   @IsEmail()
   email: string;
 
@@ -26,6 +23,7 @@ export class CreateClientDto implements Client {
   @IsBoolean()
   is_active: boolean;
 
+  @IsOptional()
   @IsInt()
   addressId: number;
 
