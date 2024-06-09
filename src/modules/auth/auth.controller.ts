@@ -1,7 +1,8 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { Request } from 'express';
+import { CreateConfirmationCode } from './dto/create-confirmation-code';
 
 @Controller('auth')
 export class AuthController {
@@ -10,5 +11,16 @@ export class AuthController {
   @UseGuards(LocalGuard)
   async login(@Req() req: Request) {
     return { token: req.user };
+  }
+
+  @Post('client/send-code')
+  async sendConfirmationCode(
+    @Body() confirmationCodeBody: CreateConfirmationCode,
+  ): Promise<void> {
+    const code = await this.authService.createConfirmationCode(
+      confirmationCodeBody.recipient,
+    );
+
+    await this.authService.sendSms(confirmationCodeBody.recipient, code);
   }
 }

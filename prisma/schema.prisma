@@ -129,3 +129,9 @@ model ApplicationRequest {
   carerId       Int
   carer         CarerProfile @relation(fields: [carerId], references: [id])
 }
+
+model ConfirmationCode {
+  id        Int    @id @default(autoincrement())
+  code      String  @unique
+  recipient String  @unique
+}
