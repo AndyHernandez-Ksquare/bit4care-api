@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
 import { Request } from 'express';
@@ -22,5 +22,10 @@ export class AuthController {
     );
 
     await this.authService.sendSms(confirmationCodeBody.recipient, code);
+  }
+
+  @Put('client/verify-code')
+  async verifyCode(@Body() confirmationCodeBody: CreateConfirmationCode) {
+    await this.authService.verifyCode(confirmationCodeBody);
   }
 }

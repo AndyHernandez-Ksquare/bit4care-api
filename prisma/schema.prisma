@@ -131,7 +131,9 @@ model ApplicationRequest {
 }
 
 model ConfirmationCode {
-  id        Int    @id @default(autoincrement())
-  code      String  @unique
-  recipient String  @unique
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  recipient  String   @unique
+  isVerified Boolean
+  expiration DateTime @default(now())
 }

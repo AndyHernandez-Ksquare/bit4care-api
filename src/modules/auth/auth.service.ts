@@ -5,6 +5,7 @@ import { AuthPayloadDto } from './dto/auth-payload.dto';
 import { PrismaService } from 'src/prisma.service';
 import * as AWS from 'aws-sdk';
 import { config } from 'src/config';
+import { CreateConfirmationCode } from './dto/create-confirmation-code';
 
 @Injectable()
 export class AuthService {
@@ -53,17 +54,46 @@ export class AuthService {
     const existingCode = await this.prisma.confirmationCode.findUnique({
       where: { recipient: recipient },
     });
+
     if (existingCode)
       await this.prisma.confirmationCode.delete({
         where: { id: existingCode.id },
       });
+
+    const expiration = new Date();
+    expiration.setMinutes(expiration.getMinutes() + 1);
+
     const newCode = await this.prisma.confirmationCode.create({
       data: {
         recipient: recipient,
         code: this.generateCode(),
+        isVerified: false,
+        expiration,
       },
     });
     return newCode.code;
+  }
+
+  async verifyCode(
+    confirmationCodeBody: CreateConfirmationCode,
+  ): Promise<void> {
+    const existingCode = await this.prisma.confirmationCode.findUnique({
+      where: {
+        code: confirmationCodeBody.code,
+        recipient: confirmationCodeBody.recipient,
+      },
+    });
+
+    if (!existingCode) throw new BadRequestException('Invalid code');
+    if (existingCode.isVerified)
+      throw new BadRequestException('Code already used');
+    if (existingCode.expiration < new Date())
+      throw new BadRequestException('Code expired');
+
+    await this.prisma.confirmationCode.update({
+      where: { id: existingCode.id },
+      data: { isVerified: true },
+    });
   }
 
   async sendSms(phoneNumber: string, message: string): Promise<void> {
