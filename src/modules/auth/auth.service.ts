@@ -63,7 +63,7 @@ export class AuthService {
     const expiration = new Date();
     expiration.setMinutes(expiration.getMinutes() + 1);
 
-    const newCode = await this.prisma.confirmationCode.create({
+    const newConfirmationCode = await this.prisma.confirmationCode.create({
       data: {
         recipient: recipient,
         code: this.generateCode(),
@@ -71,7 +71,7 @@ export class AuthService {
         expiration,
       },
     });
-    return newCode.code;
+    return newConfirmationCode.code;
   }
 
   async verifyCode(

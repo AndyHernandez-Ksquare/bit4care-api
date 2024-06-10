@@ -6,6 +6,8 @@ import { ClientModule } from './modules/client/client.module';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { config } from './config';
 import { PaymentsController } from './modules/payments/payments.controller';
+import { APP_FILTER } from '@nestjs/core';
+import { PrismaClientExceptionFilter } from './prisma.filter';
 
 @Module({
   imports: [
@@ -17,6 +19,11 @@ import { PaymentsController } from './modules/payments/payments.controller';
   ],
   controllers: [PaymentsController],
   //   controllers: [UsersController], // Add your controllers here
-  //   providers: [AppService], // Add your services here
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: PrismaClientExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

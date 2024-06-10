@@ -15,19 +15,5 @@ export class CreateClientDto implements Partial<Client> {
   phone: string;
 
   @IsString()
-  confirmation_code: string;
-
-  @IsString()
   password: string;
-
-  @IsBoolean()
-  is_active: boolean;
-
-  @IsOptional()
-  @IsInt()
-  addressId: number;
-
-  @IsOptional()
-  @IsInt()
-  stripeAccountId: number;
 }

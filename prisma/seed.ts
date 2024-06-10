@@ -111,7 +111,6 @@ async function main() {
     data: {
       email: 'client@example.com',
       phone: '555-1234',
-      confirmation_code: 'CONF123',
       password: 'password456',
       is_active: true,
       addressId: address1.id,
