@@ -13,7 +13,7 @@ export class ClientService {
       select: {
         email: true,
         stripeAccountId: true,
-        addressId: true,
+        address: true,
       },
     });
     return client;

@@ -34,7 +34,6 @@ async function main() {
   await prisma.$executeRaw`TRUNCATE TABLE "AllowedPaymentMethod" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "CarerProfile" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "Client" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Address" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "ApplicationRequest" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "CarerReview" RESTART IDENTITY CASCADE;`;
 
@@ -99,13 +98,6 @@ async function main() {
     },
   });
 
-  // Create address
-  const address1 = await prisma.address.create({
-    data: {
-      address: '123 Main St, Springfield',
-    },
-  });
-
   // Create client
   const client1 = await prisma.client.create({
     data: {
@@ -113,7 +105,7 @@ async function main() {
       phone: '555-1234',
       password: 'password456',
       is_active: true,
-      addressId: address1.id,
+      address: 'Some address',
       stripeAccountId: stripeAccount2.id,
     },
   });
@@ -122,7 +114,7 @@ async function main() {
   const applicationRequest1 = await prisma.applicationRequest.create({
     data: {
       time_range: '9 AM - 5 PM',
-      addressId: address1.id,
+      address: 'Some address',
       patient_name: 'Jane Doe',
       patient_phone: '555-5678',
       clientId: client1.id,
@@ -142,6 +134,7 @@ async function main() {
       role: UserRole.USER,
       stripeAccountId: stripeAccount1.id,
       carerId: carerProfile1.id,
+      address: 'Some address',
       paymentHistory: {
         create: [
           {

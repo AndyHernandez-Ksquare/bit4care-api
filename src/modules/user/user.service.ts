@@ -15,7 +15,7 @@ export class UserService {
         role: true,
         stripeAccountId: true,
         carerId: true,
-        addressId: true,
+        address: true,
         createdAt: true,
         updatedAt: true,
       },
