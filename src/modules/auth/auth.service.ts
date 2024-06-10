@@ -50,6 +50,25 @@ export class AuthService {
     throw new BadRequestException('Invalid credentials');
   }
 
+  async validateClient({
+    email,
+    password,
+  }: AuthPayloadDto): Promise<string | null> {
+    const client = await this.prisma.client.findUnique({
+      where: { email },
+    });
+
+    if (!client) return null;
+
+    if (password === client.password) {
+      return this.jwtService.sign({
+        email: client.email,
+        id: client.id,
+      });
+    }
+    throw new BadRequestException('Invalid credentials');
+  }
+
   async createConfirmationCode(recipient: string): Promise<string> {
     const existingCode = await this.prisma.confirmationCode.findUnique({
       where: { recipient: recipient },

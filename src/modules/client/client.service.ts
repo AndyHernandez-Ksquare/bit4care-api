@@ -7,6 +7,18 @@ import { PrismaService } from 'src/prisma.service';
 export class ClientService {
   constructor(private prisma: PrismaService) {}
 
+  getClient(id: number, email: string) {
+    const client = this.prisma.client.findUnique({
+      where: { id, email },
+      select: {
+        email: true,
+        stripeAccountId: true,
+        addressId: true,
+      },
+    });
+    return client;
+  }
+
   async create(createClientDto: CreateClientDto) {
     const confirmation_code = await this.prisma.confirmationCode.findUnique({
       where: { recipient: createClientDto.phone, isVerified: true },

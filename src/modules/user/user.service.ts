@@ -6,9 +6,9 @@ import { UserRole } from '@prisma/client';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
-  getUserById(id: number) {
+  getUser(id: number, email: string) {
     const user = this.prisma.user.findUnique({
-      where: { id },
+      where: { id, email },
       select: {
         name: true,
         email: true,

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -32,7 +33,8 @@ export class UsersController {
   @UseGuards(JwtGuard)
   async getSelf(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;
-    const user = this.userService.getUserById(reqUser.id);
+    const user = await this.userService.getUser(reqUser.id, reqUser.email);
+    if (!user) throw new NotFoundException('User not found');
     return user;
   }
 
