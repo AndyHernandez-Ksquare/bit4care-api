@@ -8,6 +8,7 @@ import { config } from './config';
 import { PaymentsController } from './modules/payments/payments.controller';
 import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from './prisma.filter';
+import { ApplicationRequestModule } from './modules/application-request/application-request.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { PrismaClientExceptionFilter } from './prisma.filter';
     CarerProfileModule,
     ClientModule,
     StripeModule.forRoot(config.stripe.secret, { apiVersion: '2023-10-16' }),
+    ApplicationRequestModule,
   ],
   controllers: [PaymentsController],
   //   controllers: [UsersController], // Add your controllers here
