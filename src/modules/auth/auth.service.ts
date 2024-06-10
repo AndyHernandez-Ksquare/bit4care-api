@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma.service';
 import * as AWS from 'aws-sdk';
 import { config } from 'src/config';
 import { CreateConfirmationCode } from './dto/create-confirmation-code';
+import { UserRole } from 'src/common/enums';
 
 @Injectable()
 export class AuthService {
@@ -64,6 +65,7 @@ export class AuthService {
       return this.jwtService.sign({
         email: client.email,
         id: client.id,
+        role: UserRole.CLIENT,
       });
     }
     throw new BadRequestException('Invalid credentials');

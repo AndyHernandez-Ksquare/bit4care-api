@@ -17,6 +17,8 @@ export class PrismaClientExceptionFilter implements ExceptionFilter {
     let message = 'An error occurred';
     if (exception.code === 'P2002') {
       message = `Unique constraint violation on field(s): ${exception.meta.target}`;
+    } else if (exception.code === 'P2003') {
+      message = `Cannot create, delete or update: a foreign key constraint fails: ${exception.meta.field_name}`;
     }
 
     response.status(status).json({

@@ -1,34 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { ApplicationRequestService } from './application-request.service';
 import { CreateApplicationRequestDto } from './dto/create-application-request.dto';
 import { UpdateApplicationRequestDto } from './dto/update-application-request.dto';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { Request } from 'express';
+import { JwtPayload } from 'src/interfaces/jwt-payload';
 
 @Controller('application-request')
 export class ApplicationRequestController {
-  constructor(private readonly applicationRequestService: ApplicationRequestService) {}
+  constructor(
+    private readonly applicationRequestService: ApplicationRequestService,
+  ) {}
+  // TODO: Create guard that checks if the requester is a client or carer. Certain endpoints only apply to one of those
 
   @Post()
-  create(@Body() createApplicationRequestDto: CreateApplicationRequestDto) {
-    return this.applicationRequestService.create(createApplicationRequestDto);
+  @UseGuards(JwtGuard)
+  create(
+    @Body() createApplicationRequestDto: CreateApplicationRequestDto,
+    @Req() req: Request,
+  ) {
+    const reqUser = req.user as JwtPayload;
+    return this.applicationRequestService.create(
+      createApplicationRequestDto,
+      reqUser.id,
+    );
   }
 
   @Get()
+  @UseGuards(JwtGuard)
   findAll() {
     return this.applicationRequestService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.applicationRequestService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.applicationRequestService.findOne(+id);
+  // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateApplicationRequestDto: UpdateApplicationRequestDto) {
-    return this.applicationRequestService.update(+id, updateApplicationRequestDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateApplicationRequestDto: UpdateApplicationRequestDto) {
+  //   return this.applicationRequestService.update(+id, updateApplicationRequestDto);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.applicationRequestService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.applicationRequestService.remove(+id);
+  // }
 }

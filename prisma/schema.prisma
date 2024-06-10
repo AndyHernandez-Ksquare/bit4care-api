@@ -100,7 +100,7 @@ model Client {
   address            String?
   stripeAccountId    Int?                @unique
   stripeAccount      StripeAccount?      @relation(fields: [stripeAccountId], references: [id])
-  ApplicationRequest ApplicationRequest?
+  ApplicationRequest ApplicationRequest[]
 }
 
 model ApplicationRequest {
@@ -109,7 +109,7 @@ model ApplicationRequest {
   address       String?
   patient_name  String
   patient_phone String
-  clientId      Int?         @unique
+  clientId      Int?         
   client        Client?      @relation(fields: [clientId], references: [id])
   description   String
   comments      String
