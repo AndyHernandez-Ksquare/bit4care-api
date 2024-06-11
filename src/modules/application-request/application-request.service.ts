@@ -9,9 +9,8 @@ export class ApplicationRequestService {
     createApplicationRequestDto: CreateApplicationRequestDto,
     clientId: number,
   ) {
-    console.log(clientId);
     const applicationRequest = await this.prisma.applicationRequest.create({
-      data: { ...createApplicationRequestDto, clientId: 1 },
+      data: { ...createApplicationRequestDto, clientId },
     });
 
     return applicationRequest;

@@ -15,6 +15,9 @@ import { UpdateApplicationRequestDto } from './dto/update-application-request.dt
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
+import { RolesGuard } from '../auth/guards/role.guard';
+import { Roles } from '../auth/decorators/Roles.decorator';
+import { UserRole } from 'src/common/enums';
 
 @Controller('application-request')
 export class ApplicationRequestController {
@@ -24,7 +27,8 @@ export class ApplicationRequestController {
   // TODO: Create guard that checks if the requester is a client or carer. Certain endpoints only apply to one of those
 
   @Post()
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.CLIENT)
   create(
     @Body() createApplicationRequestDto: CreateApplicationRequestDto,
     @Req() req: Request,
@@ -37,7 +41,8 @@ export class ApplicationRequestController {
   }
 
   @Get()
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.CLIENT)
   findAll() {
     return this.applicationRequestService.findAll();
   }
