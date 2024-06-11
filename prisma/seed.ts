@@ -110,6 +110,16 @@ async function main() {
     },
   });
 
+  const client2 = await prisma.client.create({
+    data: {
+      email: 'client2@example.com',
+      phone: '555-1234',
+      password: 'password456',
+      is_active: true,
+      address: 'Some address',
+    },
+  });
+
   // Create application request
   const applicationRequest1 = await prisma.applicationRequest.create({
     data: {
@@ -153,6 +163,16 @@ async function main() {
           },
         ],
       },
+    },
+  });
+
+  const user2 = await prisma.user.create({
+    data: {
+      name: 'John Doe',
+      email: `johnadmin.doe@example.com`,
+      password: encrypt('password123'),
+      role: UserRole.ADMIN,
+      address: 'Some address',
     },
   });
 

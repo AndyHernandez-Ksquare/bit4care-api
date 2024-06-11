@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateApplicationRequestDto } from './dto/create-application-request.dto';
 import { PrismaService } from 'src/prisma.service';
+import { Request } from 'express';
 
 @Injectable()
 export class ApplicationRequestService {
@@ -16,8 +17,10 @@ export class ApplicationRequestService {
     return applicationRequest;
   }
 
-  async findAll() {
-    const applicationRequest = await this.prisma.applicationRequest.findMany();
+  async findAll(req: Request) {
+    const applicationRequest = await this.prisma.applicationRequest.findMany({
+      where: req.where,
+    });
     return applicationRequest;
   }
 

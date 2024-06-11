@@ -1,23 +1,14 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { ApplicationRequestService } from './application-request.service';
 import { CreateApplicationRequestDto } from './dto/create-application-request.dto';
-import { UpdateApplicationRequestDto } from './dto/update-application-request.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { RolesGuard } from '../auth/guards/role.guard';
-import { Roles } from '../auth/decorators/Roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums';
+import { FilterOwner } from '../auth/decorators/filter-owner.decorator';
+import { FilterOwnerGuard } from '../auth/guards/filter-owner.guard';
 
 @Controller('application-request')
 export class ApplicationRequestController {
@@ -41,10 +32,11 @@ export class ApplicationRequestController {
   }
 
   @Get()
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard, FilterOwnerGuard)
   @Roles(UserRole.ADMIN, UserRole.CLIENT)
-  findAll() {
-    return this.applicationRequestService.findAll();
+  @FilterOwner('clientId')
+  findAll(@Req() req: Request) {
+    return this.applicationRequestService.findAll(req);
   }
 
   // @Get(':id')
