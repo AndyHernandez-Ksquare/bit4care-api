@@ -30,8 +30,7 @@ model User {
   carerId         Int?             @unique
   carer           CarerProfile?    @relation(fields: [carerId], references: [id])
   paymentHistory  PaymentHistory[]
-  Address         Address?         @relation(fields: [addressId], references: [id])
-  addressId       Int?
+  address         String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 }
@@ -84,14 +83,6 @@ model CarerProfile {
   ApplicationRequest  ApplicationRequest[]
 }
 
-model Address {
-  id                 Int                  @id @default(autoincrement())
-  address            String
-  User               User[]
-  Client             Client[]
-  ApplicationRequest ApplicationRequest[]
-}
-
 model CarerReview {
   id      Int          @id @default(autoincrement())
   stars   Int
@@ -102,30 +93,35 @@ model CarerReview {
 
 model Client {
   id                 Int                 @id @default(autoincrement())
-  email              String
+  email              String              @unique
   phone              String
-  confirmation_code  String
   password           String
   is_active          Boolean
-  addressId          Int
-  address            Address             @relation(fields: [addressId], references: [id])
+  address            String?
   stripeAccountId    Int?                @unique
   stripeAccount      StripeAccount?      @relation(fields: [stripeAccountId], references: [id])
-  ApplicationRequest ApplicationRequest?
+  ApplicationRequest ApplicationRequest[]
 }
 
 model ApplicationRequest {
   id            Int          @id @default(autoincrement())
   time_range    String
-  addressId     Int
-  address       Address      @relation(fields: [addressId], references: [id])
+  address       String?
   patient_name  String
   patient_phone String
-  clientId      Int?         @unique
+  clientId      Int?         
   client        Client?      @relation(fields: [clientId], references: [id])
   description   String
   comments      String
   amount        Int
   carerId       Int
   carer         CarerProfile @relation(fields: [carerId], references: [id])
+}
+
+model ConfirmationCode {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  recipient  String   @unique
+  isVerified Boolean
+  expiration DateTime @default(now())
 }

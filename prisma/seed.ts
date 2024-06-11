@@ -34,7 +34,6 @@ async function main() {
   await prisma.$executeRaw`TRUNCATE TABLE "AllowedPaymentMethod" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "CarerProfile" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "Client" RESTART IDENTITY CASCADE;`;
-  await prisma.$executeRaw`TRUNCATE TABLE "Address" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "ApplicationRequest" RESTART IDENTITY CASCADE;`;
   await prisma.$executeRaw`TRUNCATE TABLE "CarerReview" RESTART IDENTITY CASCADE;`;
 
@@ -99,23 +98,25 @@ async function main() {
     },
   });
 
-  // Create address
-  const address1 = await prisma.address.create({
-    data: {
-      address: '123 Main St, Springfield',
-    },
-  });
-
   // Create client
   const client1 = await prisma.client.create({
     data: {
       email: 'client@example.com',
       phone: '555-1234',
-      confirmation_code: 'CONF123',
+      password: encrypt('password456'),
+      is_active: true,
+      address: 'Some address',
+      stripeAccountId: stripeAccount2.id,
+    },
+  });
+
+  const client2 = await prisma.client.create({
+    data: {
+      email: 'client2@example.com',
+      phone: '555-1234',
       password: 'password456',
       is_active: true,
-      addressId: address1.id,
-      stripeAccountId: stripeAccount2.id,
+      address: 'Some address',
     },
   });
 
@@ -123,7 +124,7 @@ async function main() {
   const applicationRequest1 = await prisma.applicationRequest.create({
     data: {
       time_range: '9 AM - 5 PM',
-      addressId: address1.id,
+      address: 'Some address',
       patient_name: 'Jane Doe',
       patient_phone: '555-5678',
       clientId: client1.id,
@@ -143,6 +144,7 @@ async function main() {
       role: UserRole.USER,
       stripeAccountId: stripeAccount1.id,
       carerId: carerProfile1.id,
+      address: 'Some address',
       paymentHistory: {
         create: [
           {
@@ -161,6 +163,16 @@ async function main() {
           },
         ],
       },
+    },
+  });
+
+  const user2 = await prisma.user.create({
+    data: {
+      name: 'John Doe',
+      email: `johnadmin.doe@example.com`,
+      password: encrypt('password123'),
+      role: UserRole.ADMIN,
+      address: 'Some address',
     },
   });
 

@@ -14,4 +14,9 @@ export const config = {
   security: {
     encryptionKey: process.env.ENCRYPTION_KEY,
   },
+  aws: {
+    accessKey: process.env.AWS_ACCESS_KEY,
+    secretKey: process.env.AWS_SECRET_KEY,
+    region: process.env.AWS_REGION || 'us-east-1',
+  },
 };
