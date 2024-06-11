@@ -34,7 +34,6 @@ export class UsersController {
   async getSelf(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;
     const user = await this.userService.getUser(reqUser.id, reqUser.email);
-    if (!user) throw new NotFoundException('User not found');
     return user;
   }
 

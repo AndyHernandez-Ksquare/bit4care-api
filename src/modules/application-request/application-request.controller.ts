@@ -15,7 +15,6 @@ export class ApplicationRequestController {
   constructor(
     private readonly applicationRequestService: ApplicationRequestService,
   ) {}
-  // TODO: Create guard that checks if the requester is a client or carer. Certain endpoints only apply to one of those
 
   @Post()
   @UseGuards(JwtGuard, RolesGuard)

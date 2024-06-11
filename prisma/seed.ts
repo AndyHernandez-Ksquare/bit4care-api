@@ -103,7 +103,7 @@ async function main() {
     data: {
       email: 'client@example.com',
       phone: '555-1234',
-      password: 'password456',
+      password: encrypt('password456'),
       is_active: true,
       address: 'Some address',
       stripeAccountId: stripeAccount2.id,

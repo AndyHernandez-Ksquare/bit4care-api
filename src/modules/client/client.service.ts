@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -7,15 +11,19 @@ import { PrismaService } from 'src/prisma.service';
 export class ClientService {
   constructor(private prisma: PrismaService) {}
 
-  getClient(id: number, email: string) {
-    const client = this.prisma.client.findUnique({
+  async getClient(id: number, email: string) {
+    const client = await this.prisma.client.findUnique({
       where: { id, email },
       select: {
+        id: true,
         email: true,
         stripeAccountId: true,
         address: true,
       },
     });
+
+    if (!client) throw new NotFoundException('Client not found');
+
     return client;
   }
 

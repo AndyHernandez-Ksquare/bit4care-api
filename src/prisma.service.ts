@@ -13,7 +13,7 @@ export class PrismaService
     this.$use(async (params, next) => {
       // Encrypt data on create and update
       if (
-        params.model === 'User' &&
+        (params.model === 'User' || params.model === 'Client') &&
         (params.action === 'create' || params.action === 'update')
       ) {
         const user = params.args.data;
@@ -28,7 +28,7 @@ export class PrismaService
 
       // Decrypt data on find
       if (
-        params.model === 'User' &&
+        (params.model === 'User' || params.model === 'Client') &&
         (params.action === 'findUnique' ||
           params.action === 'findFirst' ||
           params.action === 'findMany')

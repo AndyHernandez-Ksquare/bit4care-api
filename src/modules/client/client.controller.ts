@@ -3,15 +3,16 @@ import {
   Get,
   Post,
   Body,
-  NotFoundException,
   Req,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
+import { UserRole } from 'src/common/enums';
 
 @Controller('client')
 export class ClientController {
@@ -21,11 +22,13 @@ export class ClientController {
   @UseGuards(JwtGuard)
   async getSelf(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;
+    if (reqUser.role !== UserRole.CLIENT)
+      throw new ForbiddenException('Not a client');
+
     const client = await this.clientService.getClient(
       reqUser.id,
       reqUser.email,
     );
-    if (!client) throw new NotFoundException('Client not found');
     return client;
   }
 
