@@ -29,7 +29,7 @@ export class ClientService {
 
   async create(createClientDto: CreateClientDto) {
     const confirmation_code = await this.prisma.confirmationCode.findUnique({
-      where: { recipient: createClientDto.phone, isVerified: true },
+      where: { recipient: createClientDto.phone, is_verified: true },
     });
 
     if (!confirmation_code)

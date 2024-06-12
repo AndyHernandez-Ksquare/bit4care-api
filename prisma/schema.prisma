@@ -33,6 +33,7 @@ model User {
   address         String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  File            File[]
 }
 
 model PaymentHistory {
@@ -92,15 +93,16 @@ model CarerReview {
 }
 
 model Client {
-  id                 Int                 @id @default(autoincrement())
-  email              String              @unique
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
   phone              String
   password           String
   is_active          Boolean
   address            String?
-  stripeAccountId    Int?                @unique
-  stripeAccount      StripeAccount?      @relation(fields: [stripeAccountId], references: [id])
+  stripeAccountId    Int?                 @unique
+  stripeAccount      StripeAccount?       @relation(fields: [stripeAccountId], references: [id])
   ApplicationRequest ApplicationRequest[]
+  File               File[]
 }
 
 model ApplicationRequest {
@@ -109,7 +111,7 @@ model ApplicationRequest {
   address       String?
   patient_name  String
   patient_phone String
-  clientId      Int?         
+  clientId      Int?
   client        Client?      @relation(fields: [clientId], references: [id])
   description   String
   comments      String
@@ -122,6 +124,17 @@ model ConfirmationCode {
   id         Int      @id @default(autoincrement())
   code       String   @unique
   recipient  String   @unique
-  isVerified Boolean
+  is_verified Boolean
   expiration DateTime @default(now())
+}
+
+model File {
+  id       Int     @id @default(autoincrement())
+  name     String
+  key      String
+  type     String
+  userId   Int?
+  user     User?   @relation(fields: [userId], references: [id])
+  clientId Int?
+  client   Client? @relation(fields: [clientId], references: [id])
 }

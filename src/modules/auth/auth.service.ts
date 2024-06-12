@@ -88,7 +88,7 @@ export class AuthService {
       data: {
         recipient: recipient,
         code: this.generateCode(),
-        isVerified: false,
+        is_verified: false,
         expiration,
       },
     });
@@ -106,14 +106,14 @@ export class AuthService {
     });
 
     if (!existingCode) throw new BadRequestException('Invalid code');
-    if (existingCode.isVerified)
+    if (existingCode.is_verified)
       throw new BadRequestException('Code already used');
     if (existingCode.expiration < new Date())
       throw new BadRequestException('Code expired');
 
     await this.prisma.confirmationCode.update({
       where: { id: existingCode.id },
-      data: { isVerified: true },
+      data: { is_verified: true },
     });
   }
 
