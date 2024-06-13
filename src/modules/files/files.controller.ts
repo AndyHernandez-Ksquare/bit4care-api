@@ -8,18 +8,14 @@ import {
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
 
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
   @Post('presigned-url')
-  async getPresignedUrl(@Body() body: CreateFileDto) {
-    const { url, file } = await this.filesService.getFileUploadUrl(
-      body.name,
-      body.type,
-    );
+  async getPresignedUrl(@Body() CreateFile: CreateFileDto) {
+    const { url, file } = await this.filesService.getFileUploadUrl(CreateFile);
     return { ...file, url };
   }
 

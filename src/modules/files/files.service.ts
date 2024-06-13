@@ -10,7 +10,8 @@ import { config } from '../../config';
 import { PrismaService } from 'src/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { File } from '@prisma/client';
-import { validTypes } from './constants';
+import { ValidActionsEnum, validTypes } from './constants';
+import { CreateFileDto } from './dto/create-file.dto';
 
 @Injectable()
 export class FilesService implements OnModuleInit {
@@ -45,22 +46,31 @@ export class FilesService implements OnModuleInit {
   }
 
   async getFileUploadUrl(
-    name: string,
-    type: string,
+    createFile: CreateFileDto,
   ): Promise<{ url: string; file: File }> {
+    const { name, type, action, userId, clientId } = createFile;
+    console.log(createFile);
     if (!validTypes.includes(type)) {
       throw new BadRequestException('Invalid file type');
     }
 
     const key = `${type}/${uuidv4()}`;
     // Save file information to database
+    let fileData: Partial<File> = {
+      key,
+      name,
+      type,
+    };
+    if (action === ValidActionsEnum.userProfilePic && userId) {
+      fileData = { ...fileData, userId, is_profile_pic: true };
+    } else if (action === ValidActionsEnum.clientProfilePic && clientId) {
+      fileData = { ...fileData, clientId, is_profile_pic: true };
+    }
+
     const file = await this.prisma.file.create({
-      data: {
-        key,
-        name,
-        type,
-      },
+      data: fileData as File,
     });
+
     const uploadParams = {
       Bucket: this.bucketName,
       Key: file.key,

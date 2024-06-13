@@ -121,20 +121,21 @@ model ApplicationRequest {
 }
 
 model ConfirmationCode {
-  id         Int      @id @default(autoincrement())
-  code       String   @unique
-  recipient  String   @unique
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  recipient   String   @unique
   is_verified Boolean
-  expiration DateTime @default(now())
+  expiration  DateTime @default(now())
 }
 
 model File {
-  id       Int     @id @default(autoincrement())
-  name     String
-  key      String
-  type     String
-  userId   Int?
-  user     User?   @relation(fields: [userId], references: [id])
-  clientId Int?
-  client   Client? @relation(fields: [clientId], references: [id])
+  id             Int     @id @default(autoincrement())
+  name           String
+  key            String
+  type           String
+  is_profile_pic Boolean @default(false)
+  userId         Int?
+  user           User?   @relation(fields: [userId], references: [id])
+  clientId       Int?
+  client         Client? @relation(fields: [clientId], references: [id])
 }
