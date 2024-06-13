@@ -49,7 +49,7 @@ export class FilesService implements OnModuleInit {
     createFile: CreateFileDto,
   ): Promise<{ url: string; file: File }> {
     const { name, type, action, userId, clientId } = createFile;
-    console.log(createFile);
+
     if (!validTypes.includes(type)) {
       throw new BadRequestException('Invalid file type');
     }
@@ -61,10 +61,26 @@ export class FilesService implements OnModuleInit {
       name,
       type,
     };
-    if (action === ValidActionsEnum.userProfilePic && userId) {
-      fileData = { ...fileData, userId, is_profile_pic: true };
-    } else if (action === ValidActionsEnum.clientProfilePic && clientId) {
-      fileData = { ...fileData, clientId, is_profile_pic: true };
+
+    if (
+      (action === ValidActionsEnum.userProfilePic && userId) ||
+      (action === ValidActionsEnum.clientProfilePic && clientId)
+    ) {
+      const existingProfilePic = await this.prisma.file.findFirst({
+        where: {
+          AND: [{ OR: [{ userId }, { clientId }] }, { is_profile_pic: true }],
+        },
+      });
+      if (existingProfilePic) {
+        await this.deleteFileInDBAndS3(existingProfilePic.id);
+      }
+
+      fileData = {
+        ...fileData,
+        [action === ValidActionsEnum.userProfilePic ? 'userId' : 'clientId']:
+          action === ValidActionsEnum.userProfilePic ? userId : clientId,
+        is_profile_pic: true,
+      };
     }
 
     const file = await this.prisma.file.create({
@@ -111,5 +127,16 @@ export class FilesService implements OnModuleInit {
       });
 
     return { file, url };
+  }
+
+  async deleteFileInDBAndS3(id: number) {
+    const file = await this.prisma.file.findUnique({ where: { id } });
+    if (!file) throw new NotFoundException();
+    await this.prisma.file.delete({ where: { id } });
+    const deleteParams = {
+      Bucket: this.bucketName,
+      Key: file.key,
+    };
+    await this.s3.deleteObject(deleteParams).promise();
   }
 }
