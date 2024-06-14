@@ -68,8 +68,10 @@ model StripeAccount {
 model CarerProfile {
   id                  Int                  @id @default(autoincrement())
   payment_range       String
-  availability        String
+  availability        Json
   qualifications      String
+  // IsFavorite should be in another table related to clients, a many to many relation between clients and carer profiles.
+  // FavoriteCarers should be a table storing the id of the carer and the id of the client
   isFavorite          Boolean
   works_on_weekend    Boolean
   residency_status    String
@@ -90,8 +92,8 @@ model CarerReview {
   id      Int          @id @default(autoincrement())
   stars   Int
   comment String
-  carerId Int
-  carer   CarerProfile @relation(fields: [carerId], references: [id])
+  carerId Int?
+  carer   CarerProfile? @relation(fields: [carerId], references: [id])
 }
 
 model Client {
@@ -119,8 +121,8 @@ model ApplicationRequest {
   description   String
   comments      String
   amount        Int
-  carerId       Int
-  carer         CarerProfile @relation(fields: [carerId], references: [id])
+  carerId       Int?
+  carer         CarerProfile? @relation(fields: [carerId], references: [id])
 }
 
 model ConfirmationCode {

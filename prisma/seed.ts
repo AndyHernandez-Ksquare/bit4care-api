@@ -74,7 +74,7 @@ async function main() {
   const carerProfile1 = await prisma.carerProfile.create({
     data: {
       payment_range: 'High',
-      availability: 'Full-time',
+      availability: { test: true },
       qualifications: 'Certified',
       isFavorite: true,
       works_on_weekend: true,
@@ -144,7 +144,7 @@ async function main() {
       email: `john.doe@example.com`,
       phone: '555-1234',
       password: encrypt('password123'),
-      role: UserRole.USER,
+      role: UserRole.CARER,
       stripeAccountId: stripeAccount1.id,
       carerId: carerProfile1.id,
       address: 'Some address',
