@@ -38,8 +38,7 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
-
-    if (!user) return null;
+    if (!user || user.role === UserRole.CLIENT) return null;
 
     if (password === user.password) {
       return this.jwtService.sign({

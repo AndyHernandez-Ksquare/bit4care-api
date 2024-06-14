@@ -5,6 +5,7 @@ import {
   NotFoundException,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   Req,
@@ -15,6 +16,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { IsUserGuard } from './guards/is-user.guard';
 
 @Controller('user')
 export class UsersController {
@@ -30,6 +33,7 @@ export class UsersController {
   // }
 
   @Get('self')
+  @UseGuards(IsUserGuard)
   @UseGuards(JwtGuard)
   async getSelf(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;
@@ -41,5 +45,14 @@ export class UsersController {
   createUser(@Body() user: CreateUserDto) {
     const createdUser = this.userService.register(user);
     return createdUser;
+  }
+
+  @Patch('self')
+  @UseGuards(IsUserGuard)
+  @UseGuards(JwtGuard)
+  update(@Req() req: Request, @Body() updateClientDto: UpdateUserDto) {
+    const reqUser = req.user as JwtPayload;
+
+    return this.userService.update(+reqUser.id, updateClientDto);
   }
 }

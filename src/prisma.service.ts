@@ -29,9 +29,7 @@ export class PrismaService
       // Decrypt data on find
       if (
         (params.model === 'User' || params.model === 'Client') &&
-        (params.action === 'findUnique' ||
-          params.action === 'findFirst' ||
-          params.action === 'findMany')
+        params.action === 'findUnique'
       ) {
         if (Array.isArray(result)) {
           result.forEach((user) => {

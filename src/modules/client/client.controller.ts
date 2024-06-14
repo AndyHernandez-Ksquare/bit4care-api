@@ -6,6 +6,8 @@ import {
   Req,
   UseGuards,
   ForbiddenException,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -13,6 +15,7 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { UserRole } from 'src/common/enums';
+import { UpdateClientDto } from './dto/update-client.dto';
 
 @Controller('client')
 export class ClientController {
@@ -47,10 +50,13 @@ export class ClientController {
   //   return this.clientService.findOne(+id);
   // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-  //   return this.clientService.update(+id, updateClientDto);
-  // }
+  @Patch('self')
+  @UseGuards(JwtGuard)
+  update(@Req() req: Request, @Body() updateClientDto: UpdateClientDto) {
+    const reqUser = req.user as JwtPayload;
+
+    return this.clientService.update(+reqUser.id, updateClientDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

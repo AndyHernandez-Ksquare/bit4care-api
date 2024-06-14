@@ -6,7 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 
-export class UpdateClientDto {
+export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()

@@ -103,6 +103,7 @@ async function main() {
     data: {
       email: 'client@example.com',
       phone: '555-1234',
+      name: 'John Doe',
       password: encrypt('password456'),
       is_active: true,
       address: 'Some address',
@@ -114,7 +115,8 @@ async function main() {
     data: {
       email: 'client2@example.com',
       phone: '555-1234',
-      password: 'password456',
+      name: 'Jane Doe',
+      password: encrypt('password456'),
       is_active: true,
       address: 'Some address',
     },
@@ -140,6 +142,7 @@ async function main() {
     data: {
       name: 'John Doe',
       email: `john.doe@example.com`,
+      phone: '555-1234',
       password: encrypt('password123'),
       role: UserRole.USER,
       stripeAccountId: stripeAccount1.id,
@@ -170,6 +173,7 @@ async function main() {
     data: {
       name: 'John Doe',
       email: `johnadmin.doe@example.com`,
+      phone: '555-1234',
       password: encrypt('password123'),
       role: UserRole.ADMIN,
       address: 'Some address',

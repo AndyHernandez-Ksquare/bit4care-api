@@ -17,12 +17,14 @@ enum UserRole {
   USER
   CARER
   ADMIN
+  CLIENT
 }
 
 model User {
   id              Int              @id @default(autoincrement())
   name            String
   email           String           @unique
+  phone           String?
   password        String?
   role            UserRole         @default(USER)
   stripeAccountId Int?             @unique
@@ -95,6 +97,7 @@ model CarerReview {
 model Client {
   id                 Int                  @id @default(autoincrement())
   email              String               @unique
+  name               String
   phone              String
   password           String
   is_active          Boolean

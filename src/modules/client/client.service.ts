@@ -63,8 +63,23 @@ export class ClientService {
     return `This action returns a #${id} client`;
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(id: number, updateClientDto: UpdateClientDto) {
+    const client = await this.prisma.client.findUnique({ where: { id } });
+    if (!client) throw new NotFoundException('Client not found');
+
+    const updatedClient = await this.prisma.client.update({
+      where: { id },
+      data: updateClientDto,
+      select: {
+        id: true,
+        address: true,
+        email: true,
+        phone: true,
+        name: true,
+      },
+    });
+
+    return updatedClient;
   }
 
   remove(id: number) {
