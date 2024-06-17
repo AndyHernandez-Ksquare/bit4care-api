@@ -19,6 +19,7 @@ export class ClientService {
         email: true,
         stripeAccountId: true,
         address: true,
+        file: { where: { is_profile_pic: true } },
       },
     });
 
@@ -29,7 +30,7 @@ export class ClientService {
 
   async create(createClientDto: CreateClientDto) {
     const confirmation_code = await this.prisma.confirmationCode.findUnique({
-      where: { recipient: createClientDto.phone, isVerified: true },
+      where: { recipient: createClientDto.phone, is_verified: true },
     });
 
     if (!confirmation_code)
@@ -63,10 +64,59 @@ export class ClientService {
     return `This action returns a #${id} client`;
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
+  async update(id: number, updateClientDto: UpdateClientDto) {
+    const client = await this.prisma.client.findUnique({ where: { id } });
+    if (!client) throw new NotFoundException('Client not found');
+
+    const updatedClient = await this.prisma.client.update({
+      where: { id },
+      data: updateClientDto,
+      select: {
+        id: true,
+        address: true,
+        email: true,
+        phone: true,
+        name: true,
+      },
+    });
+
+    return updatedClient;
   }
 
+  async toggleFavoriteCarer(clientId: number, carerId: number) {
+    const carerProfile = await this.prisma.carerProfile.findFirst({
+      where: { id: carerId },
+    });
+
+    if (!carerProfile) throw new NotFoundException('Carer not found');
+
+    const favoriteCarer = await this.prisma.favoriteCarers.findFirst({
+      where: { clientId, carerId },
+    });
+
+    if (favoriteCarer) {
+      await this.prisma.favoriteCarers.delete({
+        where: { id: favoriteCarer.id },
+      });
+    } else {
+      await this.prisma.favoriteCarers.create({
+        data: { clientId, carerId },
+      });
+    }
+    return;
+  }
+
+  async getCarersWithFavorite(clientId: number) {
+    const carers = await this.prisma.carerProfile.findMany({
+      include: {
+        favoriteCarers: {
+          where: { clientId },
+        },
+        carerReviews: true,
+      },
+    });
+    return carers;
+  }
   remove(id: number) {
     return `This action removes a #${id} client`;
   }

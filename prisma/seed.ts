@@ -74,11 +74,26 @@ async function main() {
   const carerProfile1 = await prisma.carerProfile.create({
     data: {
       payment_range: 'High',
-      availability: 'Full-time',
+      availability: { test: true },
       qualifications: 'Certified',
-      isFavorite: true,
-      works_on_weekend: true,
       residency_status: 'Permanent',
+      years_of_experience: '5',
+      speciality: 'Pediatrics',
+      motivation_letter: 'Passionate about caregiving',
+      test_score: 90,
+      is_active: true,
+      worked_hours: 1000,
+      description: 'Experienced caregiver',
+      completed_services: 50,
+    },
+  });
+
+  const carerProfile2 = await prisma.carerProfile.create({
+    data: {
+      payment_range: 'High',
+      availability: { test2: true },
+      qualifications: 'NOT Certified',
+      residency_status: 'Temporal',
       years_of_experience: '5',
       speciality: 'Pediatrics',
       motivation_letter: 'Passionate about caregiving',
@@ -103,6 +118,7 @@ async function main() {
     data: {
       email: 'client@example.com',
       phone: '555-1234',
+      name: 'John Doe',
       password: encrypt('password456'),
       is_active: true,
       address: 'Some address',
@@ -114,7 +130,8 @@ async function main() {
     data: {
       email: 'client2@example.com',
       phone: '555-1234',
-      password: 'password456',
+      name: 'Jane Doe',
+      password: encrypt('password456'),
       is_active: true,
       address: 'Some address',
     },
@@ -140,8 +157,9 @@ async function main() {
     data: {
       name: 'John Doe',
       email: `john.doe@example.com`,
+      phone: '555-1234',
       password: encrypt('password123'),
-      role: UserRole.USER,
+      role: UserRole.CARER,
       stripeAccountId: stripeAccount1.id,
       carerId: carerProfile1.id,
       address: 'Some address',
@@ -170,6 +188,7 @@ async function main() {
     data: {
       name: 'John Doe',
       email: `johnadmin.doe@example.com`,
+      phone: '555-1234',
       password: encrypt('password123'),
       role: UserRole.ADMIN,
       address: 'Some address',

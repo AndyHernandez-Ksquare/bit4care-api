@@ -1,15 +1,12 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateCarerProfileDto } from './create-carer-profile.dto';
 import {
   IsEmail,
   IsNotEmpty,
-  IsObject,
   IsOptional,
   IsPhoneNumber,
   IsString,
 } from 'class-validator';
 
-export class UpdateCarerProfileDto {
+export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @IsNotEmpty()
@@ -29,9 +26,4 @@ export class UpdateCarerProfileDto {
   @IsPhoneNumber()
   @IsNotEmpty()
   phone: string;
-
-  @IsOptional()
-  @IsObject()
-  @IsNotEmpty()
-  availability: string;
 }

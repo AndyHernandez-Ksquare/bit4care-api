@@ -7,10 +7,7 @@ import {
   IsArray,
 } from 'class-validator';
 
-export class CreateCarerProfileDto implements CarerProfile {
-  @IsInt()
-  id: number;
-
+export class CreateCarerProfileDto implements Partial<CarerProfile> {
   @IsString()
   payment_range: string;
 
@@ -56,8 +53,4 @@ export class CreateCarerProfileDto implements CarerProfile {
   @IsOptional()
   @IsInt()
   userId: number | null;
-
-  @IsOptional()
-  @IsArray()
-  carerReviews: CarerReview[];
 }

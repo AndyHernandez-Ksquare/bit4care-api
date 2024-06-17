@@ -1,7 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { CarerProfileService } from './carer-profile.service';
 import { CreateCarerProfileDto } from './dto/create-carer-profile.dto';
 import { UpdateCarerProfileDto } from './dto/update-carer-profile.dto';
+import { JwtGuard } from '../auth/guards/jwt.guard';
+import { RolesGuard } from '../auth/guards/role.guard';
+import { UserRole } from '@prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { Request } from 'express';
+import { JwtPayload } from 'src/interfaces/jwt-payload';
 
 @Controller('carer-profile')
 export class CarerProfileController {
@@ -13,6 +29,7 @@ export class CarerProfileController {
   }
 
   @Get()
+  @UseGuards(JwtGuard)
   findAll() {
     return this.carerProfileService.findAll();
   }
@@ -22,8 +39,15 @@ export class CarerProfileController {
     return this.carerProfileService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCarerProfileDto: UpdateCarerProfileDto) {
+  @Patch('self')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.CARER)
+  update(
+    @Req() req: Request,
+    @Body() updateCarerProfileDto: UpdateCarerProfileDto,
+  ) {
+    const { id } = req.user as JwtPayload;
+
     return this.carerProfileService.update(+id, updateCarerProfileDto);
   }
 

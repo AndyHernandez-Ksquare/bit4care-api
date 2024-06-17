@@ -6,6 +6,8 @@ import {
   Req,
   UseGuards,
   ForbiddenException,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -13,17 +15,19 @@ import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { UserRole } from 'src/common/enums';
+import { UpdateClientDto } from './dto/update-client.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RolesGuard } from '../auth/guards/role.guard';
 
 @Controller('client')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Get('self')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
   async getSelf(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;
-    if (reqUser.role !== UserRole.CLIENT)
-      throw new ForbiddenException('Not a client');
 
     const client = await this.clientService.getClient(
       reqUser.id,
@@ -47,10 +51,33 @@ export class ClientController {
   //   return this.clientService.findOne(+id);
   // }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-  //   return this.clientService.update(+id, updateClientDto);
-  // }
+  @Patch('self')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  update(@Req() req: Request, @Body() updateClientDto: UpdateClientDto) {
+    const reqUser = req.user as JwtPayload;
+
+    return this.clientService.update(+reqUser.id, updateClientDto);
+  }
+
+  @Patch('toggle-favorite-carer/:carerId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  toggleFavoriteCarer(@Req() req: Request) {
+    const reqUser = req.user as JwtPayload;
+    const carerId = +req.params.carerId;
+
+    return this.clientService.toggleFavoriteCarer(+reqUser.id, carerId);
+  }
+
+  @Get('get-carers-with-favorites')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.CLIENT)
+  handleGetCarersWithFavorite(@Req() req: Request) {
+    const reqUser = req.user as JwtPayload;
+
+    return this.clientService.getCarersWithFavorite(+reqUser.id);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

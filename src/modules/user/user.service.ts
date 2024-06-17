@@ -6,6 +6,7 @@ import {
 import { PrismaService } from 'src/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserRole } from '@prisma/client';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -42,5 +43,24 @@ export class UserService {
       select: { id: true, name: true, email: true, role: true },
     });
     return newUser;
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException('User not found');
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+      select: {
+        id: true,
+        address: true,
+        email: true,
+        phone: true,
+        name: true,
+      },
+    });
+
+    return updatedUser;
   }
 }

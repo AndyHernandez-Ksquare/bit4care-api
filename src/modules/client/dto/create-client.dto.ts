@@ -11,6 +11,7 @@ import { Client } from '@prisma/client';
 
 export class CreateClientDto implements Partial<Client> {
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @IsPhoneNumber()
@@ -18,5 +19,10 @@ export class CreateClientDto implements Partial<Client> {
   phone: string;
 
   @IsString()
+  @IsNotEmpty()
   password: string;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 }

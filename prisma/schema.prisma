@@ -17,12 +17,14 @@ enum UserRole {
   USER
   CARER
   ADMIN
+  CLIENT
 }
 
 model User {
   id              Int              @id @default(autoincrement())
   name            String
   email           String           @unique
+  phone           String?
   password        String?
   role            UserRole         @default(USER)
   stripeAccountId Int?             @unique
@@ -33,6 +35,7 @@ model User {
   address         String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  file            File[]
 }
 
 model PaymentHistory {
@@ -59,16 +62,15 @@ model StripeAccount {
   default_payment_method_token String
   additional_payment_methods   Int
   user                         User?
-  Client                       Client?
+  client                       Client?
 }
 
 model CarerProfile {
-  id                  Int                  @id @default(autoincrement())
-  payment_range       String
-  availability        String
-  qualifications      String
-  isFavorite          Boolean
-  works_on_weekend    Boolean
+  id             Int    @id @default(autoincrement())
+  payment_range  String
+  availability   Json
+  qualifications String
+
   residency_status    String
   years_of_experience String
   speciality          String
@@ -78,50 +80,75 @@ model CarerProfile {
   worked_hours        Int
   description         String
   completed_services  Int
+  favoriteCarers      FavoriteCarers[]
   carerReviews        CarerReview[]
   User                User?
-  ApplicationRequest  ApplicationRequest[]
+  applicationRequest  ApplicationRequest[]
+}
+
+model FavoriteCarers {
+  id       Int           @id @default(autoincrement())
+  carerId  Int
+  carer    CarerProfile? @relation(fields: [carerId], references: [id])
+  clientId Int
+  client   Client?       @relation(fields: [clientId], references: [id])
 }
 
 model CarerReview {
-  id      Int          @id @default(autoincrement())
+  id      Int           @id @default(autoincrement())
   stars   Int
   comment String
-  carerId Int
-  carer   CarerProfile @relation(fields: [carerId], references: [id])
+  carerId Int?
+  carer   CarerProfile? @relation(fields: [carerId], references: [id])
 }
 
 model Client {
-  id                 Int                 @id @default(autoincrement())
-  email              String              @unique
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  name               String
   phone              String
   password           String
   is_active          Boolean
   address            String?
-  stripeAccountId    Int?                @unique
-  stripeAccount      StripeAccount?      @relation(fields: [stripeAccountId], references: [id])
-  ApplicationRequest ApplicationRequest[]
+  stripeAccountId    Int?                 @unique
+  stripeAccount      StripeAccount?       @relation(fields: [stripeAccountId], references: [id])
+  applicationRequest ApplicationRequest[]
+  file               File[]
+  favoriteCarers     FavoriteCarers[]
 }
 
 model ApplicationRequest {
-  id            Int          @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   time_range    String
+  status        String?
   address       String?
   patient_name  String
   patient_phone String
-  clientId      Int?         
-  client        Client?      @relation(fields: [clientId], references: [id])
+  clientId      Int?
+  client        Client?       @relation(fields: [clientId], references: [id])
   description   String
   comments      String
   amount        Int
-  carerId       Int
-  carer         CarerProfile @relation(fields: [carerId], references: [id])
+  carerId       Int?
+  carer         CarerProfile? @relation(fields: [carerId], references: [id])
 }
 
 model ConfirmationCode {
-  id         Int      @id @default(autoincrement())
-  code       String   @unique
-  recipient  String   @unique
-  isVerified Boolean
-  expiration DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  recipient   String   @unique
+  is_verified Boolean
+  expiration  DateTime @default(now())
+}
+
+model File {
+  id             Int     @id @default(autoincrement())
+  name           String
+  key            String
+  type           String
+  is_profile_pic Boolean @default(false)
+  userId         Int?
+  user           User?   @relation(fields: [userId], references: [id])
+  clientId       Int?
+  client         Client? @relation(fields: [clientId], references: [id])
 }
