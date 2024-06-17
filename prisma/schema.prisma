@@ -35,7 +35,7 @@ model User {
   address         String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  File            File[]
+  file            File[]
 }
 
 model PaymentHistory {
@@ -62,18 +62,15 @@ model StripeAccount {
   default_payment_method_token String
   additional_payment_methods   Int
   user                         User?
-  Client                       Client?
+  client                       Client?
 }
 
 model CarerProfile {
-  id                  Int                  @id @default(autoincrement())
-  payment_range       String
-  availability        Json
-  qualifications      String
-  // IsFavorite should be in another table related to clients, a many to many relation between clients and carer profiles.
-  // FavoriteCarers should be a table storing the id of the carer and the id of the client
-  isFavorite          Boolean
-  works_on_weekend    Boolean
+  id             Int    @id @default(autoincrement())
+  payment_range  String
+  availability   Json
+  qualifications String
+
   residency_status    String
   years_of_experience String
   speciality          String
@@ -83,13 +80,22 @@ model CarerProfile {
   worked_hours        Int
   description         String
   completed_services  Int
+  favoriteCarers      FavoriteCarers[]
   carerReviews        CarerReview[]
   User                User?
-  ApplicationRequest  ApplicationRequest[]
+  applicationRequest  ApplicationRequest[]
+}
+
+model FavoriteCarers {
+  id       Int           @id @default(autoincrement())
+  carerId  Int
+  carer    CarerProfile? @relation(fields: [carerId], references: [id])
+  clientId Int
+  client   Client?       @relation(fields: [clientId], references: [id])
 }
 
 model CarerReview {
-  id      Int          @id @default(autoincrement())
+  id      Int           @id @default(autoincrement())
   stars   Int
   comment String
   carerId Int?
@@ -106,18 +112,20 @@ model Client {
   address            String?
   stripeAccountId    Int?                 @unique
   stripeAccount      StripeAccount?       @relation(fields: [stripeAccountId], references: [id])
-  ApplicationRequest ApplicationRequest[]
-  File               File[]
+  applicationRequest ApplicationRequest[]
+  file               File[]
+  favoriteCarers     FavoriteCarers[]
 }
 
 model ApplicationRequest {
-  id            Int          @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   time_range    String
+  status        String?
   address       String?
   patient_name  String
   patient_phone String
   clientId      Int?
-  client        Client?      @relation(fields: [clientId], references: [id])
+  client        Client?       @relation(fields: [clientId], references: [id])
   description   String
   comments      String
   amount        Int

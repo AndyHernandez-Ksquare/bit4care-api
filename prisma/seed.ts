@@ -76,9 +76,24 @@ async function main() {
       payment_range: 'High',
       availability: { test: true },
       qualifications: 'Certified',
-      isFavorite: true,
-      works_on_weekend: true,
       residency_status: 'Permanent',
+      years_of_experience: '5',
+      speciality: 'Pediatrics',
+      motivation_letter: 'Passionate about caregiving',
+      test_score: 90,
+      is_active: true,
+      worked_hours: 1000,
+      description: 'Experienced caregiver',
+      completed_services: 50,
+    },
+  });
+
+  const carerProfile2 = await prisma.carerProfile.create({
+    data: {
+      payment_range: 'High',
+      availability: { test2: true },
+      qualifications: 'NOT Certified',
+      residency_status: 'Temporal',
       years_of_experience: '5',
       speciality: 'Pediatrics',
       motivation_letter: 'Passionate about caregiving',

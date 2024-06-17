@@ -29,6 +29,7 @@ export class CarerProfileController {
   }
 
   @Get()
+  @UseGuards(JwtGuard)
   findAll() {
     return this.carerProfileService.findAll();
   }

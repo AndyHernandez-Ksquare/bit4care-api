@@ -82,6 +82,40 @@ export class ClientService {
     return updatedClient;
   }
 
+  async toggleFavoriteCarer(clientId: number, carerId: number) {
+    const carerProfile = await this.prisma.carerProfile.findFirst({
+      where: { id: carerId },
+    });
+
+    if (!carerProfile) throw new NotFoundException('Carer not found');
+
+    const favoriteCarer = await this.prisma.favoriteCarers.findFirst({
+      where: { clientId, carerId },
+    });
+
+    if (favoriteCarer) {
+      await this.prisma.favoriteCarers.delete({
+        where: { id: favoriteCarer.id },
+      });
+    } else {
+      await this.prisma.favoriteCarers.create({
+        data: { clientId, carerId },
+      });
+    }
+    return;
+  }
+
+  async getCarersWithFavorite(clientId: number) {
+    const carers = await this.prisma.carerProfile.findMany({
+      include: {
+        favoriteCarers: {
+          where: { clientId },
+        },
+        carerReviews: true,
+      },
+    });
+    return carers;
+  }
   remove(id: number) {
     return `This action removes a #${id} client`;
   }

@@ -11,8 +11,11 @@ export class CarerProfileService {
     return 'This action adds a new carerProfile';
   }
 
-  findAll() {
-    return `This action returns all carerProfile`;
+  async findAll() {
+    const carers = await this.prisma.carerProfile.findMany({
+      include: { carerReviews: true, favoriteCarers: true },
+    });
+    return carers;
   }
 
   findOne(id: number) {
@@ -26,13 +29,13 @@ export class CarerProfileService {
 
     if (!carerProfile) throw new NotFoundException("Carer doesn't exist");
 
-    // TODO: Keep working on this endpoint. Habing the settings view in mind
+    // TODO: Keep working on this endpoint. Having the settings view in mind
     const updatedCarerProfile = await this.prisma.carerProfile.update({
       where: { id: carerProfile.id },
       data: updateCarerProfileDto,
     });
 
-    return `This action updates a #${id} carerProfile`;
+    return updatedCarerProfile;
   }
 
   remove(id: number) {
