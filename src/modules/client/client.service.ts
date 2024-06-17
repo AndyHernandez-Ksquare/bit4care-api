@@ -19,6 +19,7 @@ export class ClientService {
         email: true,
         stripeAccountId: true,
         address: true,
+        file: { where: { is_profile_pic: true } },
       },
     });
 

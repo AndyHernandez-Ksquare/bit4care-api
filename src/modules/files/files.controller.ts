@@ -27,7 +27,7 @@ export class FilesController {
   async getPresignedUrlForGet(@Param('id') id: string) {
     const parsedId = parseInt(id);
     if (isNaN(parsedId)) throw new BadRequestException('Invalid id');
-    const { file, url } = await this.filesService.getFileReadUrl(parsedId);
-    return { ...file, url };
+    const { file } = await this.filesService.getFileReadUrl(parsedId);
+    return file;
   }
 }

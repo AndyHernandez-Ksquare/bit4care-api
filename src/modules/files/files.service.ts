@@ -105,7 +105,7 @@ export class FilesService implements OnModuleInit {
     return { url, file };
   }
 
-  async getFileReadUrl(id: number): Promise<{ url: string; file: File }> {
+  async getFileReadUrl(id: number): Promise<{ file: File }> {
     const file = await this.prisma.file.findUnique({
       where: { id },
     });
@@ -118,15 +118,7 @@ export class FilesService implements OnModuleInit {
       Expires: 3600,
     };
 
-    const url = await this.s3
-      .getSignedUrlPromise('getObject', getParams)
-      .catch((error) => {
-        throw new InternalServerErrorException(
-          'Error getting file' + error.message,
-        );
-      });
-
-    return { file, url };
+    return { file };
   }
 
   async deleteFileInDBAndS3(id: number) {
