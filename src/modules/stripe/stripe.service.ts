@@ -1,11 +1,15 @@
 // stripe.service.ts
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
+import { STRIPE_CLIENT } from './constants';
 
 @Injectable()
 export class StripeService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(STRIPE_CLIENT) private stripeClient: Stripe,
+  ) {}
 
   async createStripeAccount(userId: number) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -51,5 +55,18 @@ export class StripeService {
 
     // return paymentIntent;
     return;
+  }
+
+  async connectStripeAccount(code: string) {
+    const response = await this.stripeClient.oauth.token({
+      grant_type: 'authorization_code',
+      code,
+    });
+
+    const stripeUserId = response.stripe_user_id;
+
+    console.log(response);
+
+    return { message: 'Account connected successfully' };
   }
 }
