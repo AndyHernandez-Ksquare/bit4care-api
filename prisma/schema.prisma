@@ -66,11 +66,10 @@ model StripeAccount {
 }
 
 model CarerProfile {
-  id             Int    @id @default(autoincrement())
-  payment_range  String
-  availability   Json
-  qualifications String
-
+  id                  Int                  @id @default(autoincrement())
+  payment_range       String
+  availability        Json
+  qualifications      String
   residency_status    String
   years_of_experience String
   speciality          String

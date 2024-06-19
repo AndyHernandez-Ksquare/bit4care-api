@@ -1,8 +1,9 @@
 // stripe.service.ts
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
+import { Client, User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class StripeService {
@@ -57,7 +58,7 @@ export class StripeService {
     return;
   }
 
-  async connectStripeAccount(code: string) {
+  async connectStripeAccount(code: string, userRole: string, userEmai: string) {
     const response = await this.stripeClient.oauth.token({
       grant_type: 'authorization_code',
       code,
@@ -65,8 +66,54 @@ export class StripeService {
 
     const stripeUserId = response.stripe_user_id;
 
-    console.log(response);
+    const stripeClient = new Stripe(response.access_token, {
+      apiVersion: '2023-10-16',
+    });
+
+    const account = await stripeClient.accounts.retrieve(stripeUserId);
+    // TODO, check if stripe account email is the same as userEmail param
+
+    await this.createStripeAccountInDB(stripeUserId, userRole, userEmai);
 
     return { message: 'Account connected successfully' };
+  }
+
+  private async createStripeAccountInDB(
+    stripeUserId: string,
+    userRole: string,
+    userEmail: string,
+  ) {
+    const user =
+      userRole === UserRole.CLIENT
+        ? await this.prisma.client.findUnique({
+            where: { email: userEmail },
+          })
+        : await this.prisma.user.findUnique({
+            where: { email: userEmail, role: UserRole.CARER },
+          });
+
+    if (!user) throw new BadRequestException("User doesn't exist");
+
+    const stripeAccount = await this.prisma.stripeAccount.create({
+      data: {
+        stripe_customer_id: stripeUserId,
+        default_payment_method_token: '',
+        additional_payment_methods: 0,
+      },
+    });
+
+    const updateData = { stripeAccountId: stripeAccount.id };
+    const updatePromise =
+      userRole === UserRole.CLIENT
+        ? this.prisma.client.update({
+            where: { id: user.id },
+            data: updateData,
+          })
+        : this.prisma.user.update({
+            where: { id: user.id },
+            data: updateData,
+          });
+
+    await updatePromise;
   }
 }
