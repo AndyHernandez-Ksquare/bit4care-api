@@ -54,7 +54,7 @@ model CarerProfile {
   availability        Json
   qualifications      String
   residency_status    String
-  years_of_experience String
+  years_of_experience Int
   speciality          String
   motivation_letter   String
   test_score          Int
@@ -62,6 +62,19 @@ model CarerProfile {
   worked_hours        Int
   description         String
   completed_services  Int
+  birth_date          String
+  gender              String
+  postal_code         String
+  colony              String
+  state               String
+  nationality         String
+  marital_status      String
+  is_approved         Boolean
+  CURP                String
+  RFC                 String
+  NSS                 String
+  has_driving_license Boolean
+  license_type        String?
   favoriteCarers      FavoriteCarers[]
   carerReviews        CarerReview[]
   User                User?
