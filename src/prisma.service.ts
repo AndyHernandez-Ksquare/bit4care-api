@@ -84,16 +84,20 @@ export class PrismaService
         };
         if (Array.isArray(result)) {
           result.forEach(async (file) => {
-            getParams.Key = file.key;
+            getParams.Key = file?.key;
 
-            const url = await this.getFileReadUrl(getParams);
-            file.url = url;
+            if (file) {
+              const url = await this.getFileReadUrl(getParams);
+              file.url = url;
+            }
           });
         } else {
-          getParams.Key = result.key;
+          getParams.Key = result?.key;
 
-          const url = await this.getFileReadUrl(getParams);
-          result.url = url;
+          if (result) {
+            const url = await this.getFileReadUrl(getParams);
+            result.url = url;
+          }
         }
       }
 

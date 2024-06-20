@@ -38,7 +38,7 @@ export function FileActionType(options?: ValidationOptions) {
           return true;
         },
         defaultMessage() {
-          return 'Invalid action received. Valid actions are: userProfilePic, clientProfilePic';
+          return 'Invalid action received. Valid actions are: userProfilePic';
         },
       },
     });
