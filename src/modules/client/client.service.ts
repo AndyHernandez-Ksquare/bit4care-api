@@ -6,20 +6,22 @@ import {
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { PrismaService } from 'src/prisma.service';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class ClientService {
   constructor(private prisma: PrismaService) {}
 
   async getClient(id: number, email: string) {
-    const client = await this.prisma.client.findUnique({
-      where: { id, email },
+    const client = await this.prisma.user.findUnique({
+      where: { id, email, role: UserRole.CLIENT },
       select: {
         id: true,
         email: true,
         stripeAccountId: true,
         address: true,
         file: { where: { is_profile_pic: true } },
+        client: true,
       },
     });
 
@@ -41,15 +43,18 @@ export class ClientService {
       where: { id: confirmation_code.id },
     });
 
-    const client = await this.prisma.client.create({
+    const client = await this.prisma.user.create({
       data: {
         ...createClientDto,
-        is_active: true,
+        role: UserRole.CLIENT,
+        client: { create: { is_active: false } },
       },
       select: {
         id: true,
         email: true,
         phone: true,
+        role: true,
+        stripeAccountId: true,
       },
     });
 
@@ -70,13 +75,17 @@ export class ClientService {
 
     const updatedClient = await this.prisma.client.update({
       where: { id },
-      data: updateClientDto,
+      data: { User: { update: updateClientDto } },
       select: {
-        id: true,
-        address: true,
-        email: true,
-        phone: true,
-        name: true,
+        User: {
+          select: {
+            id: true,
+            address: true,
+            email: true,
+            phone: true,
+            name: true,
+          },
+        },
       },
     });
 

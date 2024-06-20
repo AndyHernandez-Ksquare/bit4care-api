@@ -31,6 +31,8 @@ model User {
   stripeAccount   StripeAccount?   @relation(fields: [stripeAccountId], references: [id])
   carerId         Int?             @unique
   carer           CarerProfile?    @relation(fields: [carerId], references: [id])
+  clientId        Int?             @unique
+  client          Client?          @relation(fields: [clientId], references: [id])
   paymentHistory  PaymentHistory[]
   address         String?
   createdAt       DateTime         @default(now())
@@ -38,31 +40,12 @@ model User {
   file            File[]
 }
 
-model PaymentHistory {
-  id             Int                  @id @default(autoincrement())
-  status         String
-  amount         String
-  payment_method String
-  creation_date  DateTime
-  description    String
-  userId         Int
-  user           User                 @relation(fields: [userId], references: [id])
-  allowedMethod  AllowedPaymentMethod @relation(fields: [payment_method], references: [payment_method])
-}
-
-model AllowedPaymentMethod {
-  id             Int              @id @default(autoincrement())
-  payment_method String           @unique
-  PaymentHistory PaymentHistory[]
-}
-
-model StripeAccount {
-  id                           Int     @id @default(autoincrement())
-  stripe_customer_id           String  @unique
-  default_payment_method_token String
-  additional_payment_methods   Int
-  user                         User?
-  client                       Client?
+model Client {
+  id                 Int                  @id @default(autoincrement())
+  is_active          Boolean
+  applicationRequest ApplicationRequest[]
+  favoriteCarers     FavoriteCarers[]
+  User               User?
 }
 
 model CarerProfile {
@@ -85,6 +68,32 @@ model CarerProfile {
   applicationRequest  ApplicationRequest[]
 }
 
+model PaymentHistory {
+  id             Int                  @id @default(autoincrement())
+  status         String
+  amount         String
+  payment_method String
+  creation_date  DateTime
+  description    String
+  userId         Int
+  user           User                 @relation(fields: [userId], references: [id])
+  allowedMethod  AllowedPaymentMethod @relation(fields: [payment_method], references: [payment_method])
+}
+
+model AllowedPaymentMethod {
+  id             Int              @id @default(autoincrement())
+  payment_method String           @unique
+  PaymentHistory PaymentHistory[]
+}
+
+model StripeAccount {
+  id                           Int    @id @default(autoincrement())
+  stripe_customer_id           String @unique
+  default_payment_method_token String
+  additional_payment_methods   Int
+  user                         User?
+}
+
 model FavoriteCarers {
   id       Int           @id @default(autoincrement())
   carerId  Int
@@ -99,21 +108,6 @@ model CarerReview {
   comment String
   carerId Int?
   carer   CarerProfile? @relation(fields: [carerId], references: [id])
-}
-
-model Client {
-  id                 Int                  @id @default(autoincrement())
-  email              String               @unique
-  name               String
-  phone              String
-  password           String
-  is_active          Boolean
-  address            String?
-  stripeAccountId    Int?                 @unique
-  stripeAccount      StripeAccount?       @relation(fields: [stripeAccountId], references: [id])
-  applicationRequest ApplicationRequest[]
-  file               File[]
-  favoriteCarers     FavoriteCarers[]
 }
 
 model ApplicationRequest {
@@ -148,6 +142,4 @@ model File {
   is_profile_pic Boolean @default(false)
   userId         Int?
   user           User?   @relation(fields: [userId], references: [id])
-  clientId       Int?
-  client         Client? @relation(fields: [clientId], references: [id])
 }

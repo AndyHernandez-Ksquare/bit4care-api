@@ -6,7 +6,6 @@ import { PrismaService } from 'src/prisma.service';
 import * as AWS from 'aws-sdk';
 import { config } from 'src/config';
 import { CreateConfirmationCode } from './dto/create-confirmation-code';
-import { UserRole } from 'src/common/enums';
 
 @Injectable()
 export class AuthService {
@@ -38,33 +37,13 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
-    if (!user || user.role === UserRole.CLIENT) return null;
+    if (!user) return null;
 
     if (password === user.password) {
       return this.jwtService.sign({
         email: user.email,
         role: user.role,
         id: user.id,
-      });
-    }
-    throw new BadRequestException('Invalid credentials');
-  }
-
-  async validateClient({
-    email,
-    password,
-  }: AuthPayloadDto): Promise<string | null> {
-    const client = await this.prisma.client.findUnique({
-      where: { email },
-    });
-
-    if (!client) return null;
-
-    if (password === client.password) {
-      return this.jwtService.sign({
-        email: client.email,
-        id: client.id,
-        role: UserRole.CLIENT,
       });
     }
     throw new BadRequestException('Invalid credentials');

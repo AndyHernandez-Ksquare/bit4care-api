@@ -62,14 +62,9 @@ export class FilesService implements OnModuleInit {
       type,
     };
 
-    if (
-      (action === ValidActionsEnum.userProfilePic && userId) ||
-      (action === ValidActionsEnum.clientProfilePic && clientId)
-    ) {
+    if (action === ValidActionsEnum.userProfilePic && userId) {
       const existingProfilePic = await this.prisma.file.findFirst({
-        where: {
-          AND: [{ OR: [{ userId }, { clientId }] }, { is_profile_pic: true }],
-        },
+        where: { userId, is_profile_pic: true },
       });
       if (existingProfilePic) {
         await this.deleteFileInDBAndS3(existingProfilePic.id);
@@ -77,9 +72,8 @@ export class FilesService implements OnModuleInit {
 
       fileData = {
         ...fileData,
-        [action === ValidActionsEnum.userProfilePic ? 'userId' : 'clientId']:
-          action === ValidActionsEnum.userProfilePic ? userId : clientId,
-        is_profile_pic: true,
+        userId,
+        is_profile_pic: ValidActionsEnum.userProfilePic ? true : false,
       };
     }
 

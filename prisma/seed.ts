@@ -116,24 +116,36 @@ async function main() {
   // Create client
   const client1 = await prisma.client.create({
     data: {
-      email: 'client@example.com',
-      phone: '555-1234',
-      name: 'John Doe',
-      password: encrypt('password456'),
       is_active: true,
-      address: 'Some address',
-      stripeAccountId: stripeAccount2.id,
     },
   });
 
   const client2 = await prisma.client.create({
     data: {
+      is_active: true,
+    },
+  });
+
+  const userClient1 = await prisma.user.create({
+    data: {
+      email: 'client@example.com',
+      phone: '555-1234',
+      name: 'John Doe',
+      password: encrypt('password456'),
+      address: 'Some address',
+      role: 'CLIENT',
+      clientId: client1.id,
+    },
+  });
+
+  const userClient2 = await prisma.user.create({
+    data: {
       email: 'client2@example.com',
       phone: '555-1234',
       name: 'Jane Doe',
       password: encrypt('password456'),
-      is_active: true,
       address: 'Some address',
+      clientId: client2.id,
     },
   });
 

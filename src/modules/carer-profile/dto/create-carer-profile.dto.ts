@@ -1,11 +1,5 @@
-import { CarerProfile, CarerReview } from '@prisma/client';
-import {
-  IsString,
-  IsBoolean,
-  IsInt,
-  IsOptional,
-  IsArray,
-} from 'class-validator';
+import { CarerProfile } from '@prisma/client';
+import { IsString, IsBoolean, IsInt, IsOptional } from 'class-validator';
 
 export class CreateCarerProfileDto implements Partial<CarerProfile> {
   @IsString()

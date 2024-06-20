@@ -34,7 +34,7 @@ export class CarerProfileController {
     return this.carerProfileService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.carerProfileService.findOne(+id);
   }

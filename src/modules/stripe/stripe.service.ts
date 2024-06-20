@@ -83,14 +83,9 @@ export class StripeService {
     userRole: string,
     userEmail: string,
   ) {
-    const user =
-      userRole === UserRole.CLIENT
-        ? await this.prisma.client.findUnique({
-            where: { email: userEmail },
-          })
-        : await this.prisma.user.findUnique({
-            where: { email: userEmail, role: UserRole.CARER },
-          });
+    const user = await this.prisma.user.findUnique({
+      where: { email: userEmail, role: userRole as UserRole },
+    });
 
     if (!user) throw new BadRequestException("User doesn't exist");
 
