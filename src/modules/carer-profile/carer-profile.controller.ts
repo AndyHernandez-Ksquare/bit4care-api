@@ -18,6 +18,7 @@ import { UserRole } from '@prisma/client';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
+import { AcceptCarerProfileDto } from './dto/accept-carer-profile-dto';
 
 @Controller('carer-profile')
 export class CarerProfileController {
@@ -49,6 +50,19 @@ export class CarerProfileController {
     const { id } = req.user as JwtPayload;
 
     return this.carerProfileService.update(+id, updateCarerProfileDto);
+  }
+
+  @Patch('approve-carer/:carerId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  handleApproveCarer(
+    @Param('carerId') carerId: string,
+    @Body() cceptCarerProfileDto: AcceptCarerProfileDto,
+  ) {
+    return this.carerProfileService.approveCarer(
+      +carerId,
+      cceptCarerProfileDto,
+    );
   }
 
   @UseGuards(JwtGuard, RolesGuard)

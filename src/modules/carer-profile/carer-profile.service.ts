@@ -1,8 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCarerProfileDto } from './dto/create-carer-profile.dto';
 import { UpdateCarerProfileDto } from './dto/update-carer-profile.dto';
 import { PrismaService } from 'src/prisma.service';
 import { UserRole } from '@prisma/client';
+import { AcceptCarerProfileDto } from './dto/accept-carer-profile-dto';
+
+// Keep working on endpoint for admins to approve/reject carers (done). Also check file upload parts of carer creation, I think when uploading sensitive data...
+// Such as personal identifications, it should be uploaded following a certain protocol
 
 @Injectable()
 export class CarerProfileService {
@@ -80,6 +88,38 @@ export class CarerProfileService {
     const updatedCarerProfile = await this.prisma.carerProfile.update({
       where: { id: carerProfile.id },
       data: updateCarerProfileDto,
+    });
+
+    return updatedCarerProfile;
+  }
+
+  async approveCarer(id: number, cceptCarerProfileDto: AcceptCarerProfileDto) {
+    const carerProfile = await this.prisma.carerProfile.findUnique({
+      where: { id },
+    });
+    if (!carerProfile) throw new NotFoundException("Carer doesn't exist");
+
+    if (carerProfile.reviewed)
+      throw new ForbiddenException('Carer has already been reviewed');
+
+    const updatedCarerProfile = await this.prisma.user.update({
+      data: {
+        carer: {
+          update: {
+            is_approved: cceptCarerProfileDto.is_approved,
+            reviewed: true,
+          },
+        },
+      },
+      where: { carerId: id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        address: true,
+        role: true,
+        carer: true,
+      },
     });
 
     return updatedCarerProfile;

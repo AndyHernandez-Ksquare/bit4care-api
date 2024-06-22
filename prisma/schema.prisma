@@ -75,6 +75,7 @@ model CarerProfile {
   NSS                 String
   has_driving_license Boolean
   license_type        String?
+  reviewed             Boolean? @default(false)
   favoriteCarers      FavoriteCarers[]
   carerReviews        CarerReview[]
   User                User?
