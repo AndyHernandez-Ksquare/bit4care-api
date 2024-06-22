@@ -51,6 +51,8 @@ export class CarerProfileController {
     return this.carerProfileService.update(+id, updateCarerProfileDto);
   }
 
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.carerProfileService.remove(+id);

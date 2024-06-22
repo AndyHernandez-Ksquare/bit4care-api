@@ -18,6 +18,10 @@ export class CreateCarerProfileDto implements Partial<CarerProfile> {
 
   @IsString()
   @IsNotEmpty()
+  password: string;
+
+  @IsString()
+  @IsNotEmpty()
   payment_range: string;
 
   @IsString()
@@ -31,9 +35,6 @@ export class CreateCarerProfileDto implements Partial<CarerProfile> {
   @IsString()
   @IsNotEmpty()
   address: string;
-
-  @IsBoolean()
-  isFavorite: boolean;
 
   @IsBoolean()
   works_on_weekend: boolean;
@@ -76,6 +77,18 @@ export class CreateCarerProfileDto implements Partial<CarerProfile> {
 
   @IsString()
   @IsNotEmpty()
+  CURP: string;
+
+  @IsString()
+  @IsNotEmpty()
+  RFC: string;
+
+  @IsString()
+  @IsNotEmpty()
+  NSS: string;
+
+  @IsString()
+  @IsNotEmpty()
   speciality: string;
 
   @IsString()
@@ -86,15 +99,9 @@ export class CreateCarerProfileDto implements Partial<CarerProfile> {
   test_score: number;
 
   @IsBoolean()
-  is_active: boolean;
-
-  @IsInt()
-  worked_hours: number;
+  has_driving_license: boolean;
 
   @IsString()
   @IsNotEmpty()
   description: string;
-
-  @IsInt()
-  completed_services: number;
 }
