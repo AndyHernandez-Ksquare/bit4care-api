@@ -84,7 +84,6 @@ export class CarerProfileService {
 
     if (!carerProfile) throw new NotFoundException("Carer doesn't exist");
 
-    // TODO: Keep working on this endpoint. Having the settings view in mind
     const updatedCarerProfile = await this.prisma.carerProfile.update({
       where: { id: carerProfile.id },
       data: updateCarerProfileDto,

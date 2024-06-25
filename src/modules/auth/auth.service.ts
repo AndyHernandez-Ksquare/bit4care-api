@@ -6,6 +6,8 @@ import { PrismaService } from 'src/prisma.service';
 import * as AWS from 'aws-sdk';
 import { config } from 'src/config';
 import { CreateConfirmationCode } from './dto/create-confirmation-code';
+import { encrypt, decrypt } from '../../common/utils';
+import { ChangePasswordDto } from './dto/change-password-dto';
 
 @Injectable()
 export class AuthService {
@@ -98,5 +100,24 @@ export class AuthService {
   async sendSms(phoneNumber: string, message: string): Promise<void> {
     const params = { Message: message, PhoneNumber: phoneNumber };
     await this.sns.publish(params).promise();
+  }
+
+  async changePassword(
+    id: number,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+    console.log(user.password);
+    if (!user || user.password !== changePasswordDto.oldPassword)
+      throw new BadRequestException(
+        'User not found, or current password is incorrect',
+      );
+
+    await this.prisma.user.update({
+      where: { id },
+      data: { password: changePasswordDto.newPassword },
+    });
   }
 }
