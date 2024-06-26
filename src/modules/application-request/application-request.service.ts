@@ -17,10 +17,19 @@ export class ApplicationRequestService {
     return applicationRequest;
   }
 
-  async findAll(req: Request) {
+  async findAll(req: Request, date: string, status: string) {
+    // TODO: Fix status filter not working
+    console.log(status, date);
+    const filters = {
+      ...req.where,
+      createdAt: date ? { gte: new Date(date) } : undefined,
+      status: status ? { equals: status } : undefined,
+    };
+
     const applicationRequest = await this.prisma.applicationRequest.findMany({
-      where: req.where,
+      where: filters,
     });
+    console.log(applicationRequest);
     return applicationRequest;
   }
 

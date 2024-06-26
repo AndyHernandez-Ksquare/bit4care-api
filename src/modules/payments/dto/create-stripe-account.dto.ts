@@ -2,7 +2,7 @@
 import { IsString, IsInt } from 'class-validator';
 import { StripeAccount } from '@prisma/client';
 
-export class CreateStripeAccountDto implements StripeAccount {
+export class CreateStripeAccountDto implements Partial<StripeAccount> {
   @IsInt()
   id: number;
 

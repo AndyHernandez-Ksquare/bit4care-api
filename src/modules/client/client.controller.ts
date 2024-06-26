@@ -8,6 +8,7 @@ import {
   ForbiddenException,
   Patch,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -79,8 +80,10 @@ export class ClientController {
     return this.clientService.getCarersWithFavorite(+reqUser.id);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.clientService.remove(+id);
-  // }
+  @Delete('admin/:userId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  handleDeleteClient(@Param('userId') userId: string) {
+    return this.clientService.deleteClient(+userId);
+  }
 }

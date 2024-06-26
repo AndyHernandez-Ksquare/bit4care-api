@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Query,
+} from '@nestjs/common';
 import { ApplicationRequestService } from './application-request.service';
 import { CreateApplicationRequestDto } from './dto/create-application-request.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -34,8 +42,13 @@ export class ApplicationRequestController {
   @UseGuards(JwtGuard, RolesGuard, FilterOwnerGuard)
   @Roles(UserRole.ADMIN, UserRole.CLIENT)
   @FilterOwner('clientId')
-  findAll(@Req() req: Request) {
-    return this.applicationRequestService.findAll(req);
+  findAll(
+    @Req() req: Request,
+    @Query() query: { date: string; status: string },
+  ) {
+    const { date, status } = query;
+
+    return this.applicationRequestService.findAll(req, date, status);
   }
 
   // @Get(':id')

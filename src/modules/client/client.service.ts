@@ -126,7 +126,12 @@ export class ClientService {
     });
     return carers;
   }
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async deleteClient(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id, role: UserRole.CLIENT },
+    });
+    if (!user) throw new NotFoundException('Client not found');
+
+    await this.prisma.user.delete({ where: { id } });
   }
 }
