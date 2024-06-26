@@ -98,8 +98,16 @@ export class AuthService {
   }
 
   async sendSms(phoneNumber: string, message: string): Promise<void> {
-    const params = { Message: message, PhoneNumber: phoneNumber };
-    await this.sns.publish(params).promise();
+    const params: AWS.SNS.PublishInput = {
+      Message: message,
+      PhoneNumber: phoneNumber,
+    };
+
+    try {
+      await this.sns.publish(params).promise();
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+    }
   }
 
   async changePassword(
