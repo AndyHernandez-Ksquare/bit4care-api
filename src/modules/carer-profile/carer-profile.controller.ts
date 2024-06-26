@@ -19,6 +19,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { AcceptCarerProfileDto } from './dto/accept-carer-profile-dto';
+import { IsCarerActiveGuard } from './guards/is-carer-active.guard';
 
 @Controller('carer-profile')
 export class CarerProfileController {
@@ -40,8 +41,22 @@ export class CarerProfileController {
     return this.carerProfileService.findOne(+id);
   }
 
-  @Patch('self')
+  @Get('admin/list-carers-pedning-to-approve')
   @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  handleFindAllCarersPendingToApprove() {
+    return this.carerProfileService.findAllCarersPendingToApprove();
+  }
+
+  @Patch('admin/desactivate-carer/:carerId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  handleDesactivateCarer(@Param('carerId') carerId: string) {
+    return this.carerProfileService.desactivateCarer(+carerId);
+  }
+
+  @Patch('self')
+  @UseGuards(JwtGuard, RolesGuard, IsCarerActiveGuard)
   @Roles(UserRole.CARER)
   update(
     @Req() req: Request,
@@ -52,14 +67,14 @@ export class CarerProfileController {
     return this.carerProfileService.update(+id, updateCarerProfileDto);
   }
 
-  @Patch('approve-carer/:carerId')
+  @Patch('admin/approve-deny-carer/:carerId')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   handleApproveCarer(
     @Param('carerId') carerId: string,
     @Body() cceptCarerProfileDto: AcceptCarerProfileDto,
   ) {
-    return this.carerProfileService.approveCarer(
+    return this.carerProfileService.approveOrDenyCarer(
       +carerId,
       cceptCarerProfileDto,
     );
@@ -67,7 +82,7 @@ export class CarerProfileController {
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @Delete(':id')
+  @Delete('admin/:id')
   remove(@Param('id') id: string) {
     return this.carerProfileService.remove(+id);
   }

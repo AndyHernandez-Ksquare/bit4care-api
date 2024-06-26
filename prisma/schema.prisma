@@ -42,7 +42,7 @@ model User {
 
 model Client {
   id                 Int                  @id @default(autoincrement())
-  is_active          Boolean
+  is_active          Boolean              @default(true)
   applicationRequest ApplicationRequest[]
   favoriteCarers     FavoriteCarers[]
   User               User?
@@ -58,7 +58,7 @@ model CarerProfile {
   speciality          String
   motivation_letter   String
   test_score          Int
-  is_active           Boolean
+  is_active           Boolean              @default(true)
   worked_hours        Int
   description         String
   completed_services  Int
@@ -75,7 +75,7 @@ model CarerProfile {
   NSS                 String
   has_driving_license Boolean
   license_type        String?
-  reviewed             Boolean? @default(false)
+  reviewed            Boolean?             @default(false)
   favoriteCarers      FavoriteCarers[]
   carerReviews        CarerReview[]
   User                User?
