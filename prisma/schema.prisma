@@ -25,17 +25,61 @@ model User {
   name            String
   email           String           @unique
   phone           String?
-  password        String?
+  password        String
   role            UserRole         @default(USER)
   stripeAccountId Int?             @unique
   stripeAccount   StripeAccount?   @relation(fields: [stripeAccountId], references: [id])
   carerId         Int?             @unique
   carer           CarerProfile?    @relation(fields: [carerId], references: [id])
+  clientId        Int?             @unique
+  client          Client?          @relation(fields: [clientId], references: [id])
   paymentHistory  PaymentHistory[]
   address         String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   file            File[]
+}
+
+model Client {
+  id                 Int                  @id @default(autoincrement())
+  is_active          Boolean
+  applicationRequest ApplicationRequest[]
+  favoriteCarers     FavoriteCarers[]
+  User               User?
+}
+
+model CarerProfile {
+  id                  Int                  @id @default(autoincrement())
+  payment_range       String
+  availability        Json
+  qualifications      String
+  residency_status    String
+  years_of_experience Int
+  speciality          String
+  motivation_letter   String
+  test_score          Int
+  is_active           Boolean
+  worked_hours        Int
+  description         String
+  completed_services  Int
+  birth_date          String
+  gender              String
+  postal_code         String
+  colony              String
+  state               String
+  nationality         String
+  marital_status      String
+  is_approved         Boolean
+  CURP                String
+  RFC                 String
+  NSS                 String
+  has_driving_license Boolean
+  license_type        String?
+  reviewed             Boolean? @default(false)
+  favoriteCarers      FavoriteCarers[]
+  carerReviews        CarerReview[]
+  User                User?
+  applicationRequest  ApplicationRequest[]
 }
 
 model PaymentHistory {
@@ -57,33 +101,11 @@ model AllowedPaymentMethod {
 }
 
 model StripeAccount {
-  id                           Int     @id @default(autoincrement())
-  stripe_customer_id           String  @unique
+  id                           Int    @id @default(autoincrement())
+  stripe_customer_id           String @unique
   default_payment_method_token String
   additional_payment_methods   Int
   user                         User?
-  client                       Client?
-}
-
-model CarerProfile {
-  id             Int    @id @default(autoincrement())
-  payment_range  String
-  availability   Json
-  qualifications String
-
-  residency_status    String
-  years_of_experience String
-  speciality          String
-  motivation_letter   String
-  test_score          Int
-  is_active           Boolean
-  worked_hours        Int
-  description         String
-  completed_services  Int
-  favoriteCarers      FavoriteCarers[]
-  carerReviews        CarerReview[]
-  User                User?
-  applicationRequest  ApplicationRequest[]
 }
 
 model FavoriteCarers {
@@ -100,21 +122,6 @@ model CarerReview {
   comment String
   carerId Int?
   carer   CarerProfile? @relation(fields: [carerId], references: [id])
-}
-
-model Client {
-  id                 Int                  @id @default(autoincrement())
-  email              String               @unique
-  name               String
-  phone              String
-  password           String
-  is_active          Boolean
-  address            String?
-  stripeAccountId    Int?                 @unique
-  stripeAccount      StripeAccount?       @relation(fields: [stripeAccountId], references: [id])
-  applicationRequest ApplicationRequest[]
-  file               File[]
-  favoriteCarers     FavoriteCarers[]
 }
 
 model ApplicationRequest {
@@ -149,6 +156,4 @@ model File {
   is_profile_pic Boolean @default(false)
   userId         Int?
   user           User?   @relation(fields: [userId], references: [id])
-  clientId       Int?
-  client         Client? @relation(fields: [clientId], references: [id])
 }

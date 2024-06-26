@@ -4,6 +4,7 @@ import { StripeService } from './stripe.service';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
+import { StripeController } from './stripe.controller';
 
 @Module({})
 export class StripeModule {
@@ -16,8 +17,9 @@ export class StripeModule {
     };
     return {
       module: StripeModule,
+      controllers: [StripeController],
       providers: [stripeProvider, StripeService, PrismaService],
-      exports: [stripeProvider],
+      exports: [stripeProvider, StripeService],
       global: true,
     };
   }

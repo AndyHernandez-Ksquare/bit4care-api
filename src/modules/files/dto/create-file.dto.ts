@@ -18,12 +18,4 @@ export class CreateFileDto {
   @IsString()
   @FileActionType()
   action: string;
-
-  @IsOptional()
-  @IsNumber()
-  userId: number;
-
-  @IsOptional()
-  @IsNumber()
-  clientId: number;
 }

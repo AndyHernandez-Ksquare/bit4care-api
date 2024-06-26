@@ -6,10 +6,13 @@ import {
   Param,
   BadRequestException,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
+import { Request } from 'express';
+import { JwtPayload } from 'src/interfaces/jwt-payload';
 
 @Controller('files')
 export class FilesController {
@@ -17,8 +20,15 @@ export class FilesController {
 
   @Post('presigned-url')
   @UseGuards(JwtGuard)
-  async getPresignedUrl(@Body() CreateFile: CreateFileDto) {
-    const { url, file } = await this.filesService.getFileUploadUrl(CreateFile);
+  async getPresignedUrl(
+    @Body() CreateFile: CreateFileDto,
+    @Req() req: Request,
+  ) {
+    const reqUser = req.user as JwtPayload;
+    const { url, file } = await this.filesService.getFileUploadUrl(
+      CreateFile,
+      reqUser.id,
+    );
     return { ...file, url };
   }
 

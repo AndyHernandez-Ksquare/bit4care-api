@@ -18,6 +18,7 @@ import { UserRole } from '@prisma/client';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
+import { AcceptCarerProfileDto } from './dto/accept-carer-profile-dto';
 
 @Controller('carer-profile')
 export class CarerProfileController {
@@ -34,7 +35,7 @@ export class CarerProfileController {
     return this.carerProfileService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string) {
     return this.carerProfileService.findOne(+id);
   }
@@ -51,6 +52,21 @@ export class CarerProfileController {
     return this.carerProfileService.update(+id, updateCarerProfileDto);
   }
 
+  @Patch('approve-carer/:carerId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  handleApproveCarer(
+    @Param('carerId') carerId: string,
+    @Body() cceptCarerProfileDto: AcceptCarerProfileDto,
+  ) {
+    return this.carerProfileService.approveCarer(
+      +carerId,
+      cceptCarerProfileDto,
+    );
+  }
+
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.carerProfileService.remove(+id);

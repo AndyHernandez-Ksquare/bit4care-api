@@ -6,7 +6,8 @@ import { PrismaService } from 'src/prisma.service';
 import * as AWS from 'aws-sdk';
 import { config } from 'src/config';
 import { CreateConfirmationCode } from './dto/create-confirmation-code';
-import { UserRole } from 'src/common/enums';
+import { encrypt, decrypt } from '../../common/utils';
+import { ChangePasswordDto } from './dto/change-password-dto';
 
 @Injectable()
 export class AuthService {
@@ -38,33 +39,13 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
-    if (!user || user.role === UserRole.CLIENT) return null;
+    if (!user) return null;
 
     if (password === user.password) {
       return this.jwtService.sign({
         email: user.email,
         role: user.role,
         id: user.id,
-      });
-    }
-    throw new BadRequestException('Invalid credentials');
-  }
-
-  async validateClient({
-    email,
-    password,
-  }: AuthPayloadDto): Promise<string | null> {
-    const client = await this.prisma.client.findUnique({
-      where: { email },
-    });
-
-    if (!client) return null;
-
-    if (password === client.password) {
-      return this.jwtService.sign({
-        email: client.email,
-        id: client.id,
-        role: UserRole.CLIENT,
       });
     }
     throw new BadRequestException('Invalid credentials');
@@ -117,7 +98,34 @@ export class AuthService {
   }
 
   async sendSms(phoneNumber: string, message: string): Promise<void> {
-    const params = { Message: message, PhoneNumber: phoneNumber };
-    await this.sns.publish(params).promise();
+    const params: AWS.SNS.PublishInput = {
+      Message: message,
+      PhoneNumber: phoneNumber,
+    };
+
+    try {
+      await this.sns.publish(params).promise();
+    } catch (error) {
+      console.error('Error sending SMS:', error);
+    }
+  }
+
+  async changePassword(
+    id: number,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+    console.log(user.password);
+    if (!user || user.password !== changePasswordDto.oldPassword)
+      throw new BadRequestException(
+        'User not found, or current password is incorrect',
+      );
+
+    await this.prisma.user.update({
+      where: { id },
+      data: { password: changePasswordDto.newPassword },
+    });
   }
 }

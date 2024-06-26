@@ -47,8 +47,9 @@ export class FilesService implements OnModuleInit {
 
   async getFileUploadUrl(
     createFile: CreateFileDto,
+    userId: number,
   ): Promise<{ url: string; file: File }> {
-    const { name, type, action, userId, clientId } = createFile;
+    const { name, type, action } = createFile;
 
     if (!validTypes.includes(type)) {
       throw new BadRequestException('Invalid file type');
@@ -60,27 +61,17 @@ export class FilesService implements OnModuleInit {
       key,
       name,
       type,
+      userId,
+      is_profile_pic: action === ValidActionsEnum.userProfilePic ? true : false,
     };
 
-    if (
-      (action === ValidActionsEnum.userProfilePic && userId) ||
-      (action === ValidActionsEnum.clientProfilePic && clientId)
-    ) {
+    if (action === ValidActionsEnum.userProfilePic) {
       const existingProfilePic = await this.prisma.file.findFirst({
-        where: {
-          AND: [{ OR: [{ userId }, { clientId }] }, { is_profile_pic: true }],
-        },
+        where: { userId, is_profile_pic: true },
       });
       if (existingProfilePic) {
         await this.deleteFileInDBAndS3(existingProfilePic.id);
       }
-
-      fileData = {
-        ...fileData,
-        [action === ValidActionsEnum.userProfilePic ? 'userId' : 'clientId']:
-          action === ValidActionsEnum.userProfilePic ? userId : clientId,
-        is_profile_pic: true,
-      };
     }
 
     const file = await this.prisma.file.create({

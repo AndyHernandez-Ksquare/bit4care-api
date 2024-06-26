@@ -10,6 +10,9 @@ export const config = {
   },
   stripe: {
     secret: process.env.STRIPE_SECRET_KEY,
+    clientId: process.env.STRIPE_CLIENT_ID,
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    redirectUri: process.env.STRIPE_REDIRECT_URI,
   },
   security: {
     encryptionKey: process.env.ENCRYPTION_KEY,

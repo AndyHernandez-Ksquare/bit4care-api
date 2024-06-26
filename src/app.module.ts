@@ -17,7 +17,9 @@ import { FilesModule } from './modules/files/files.module';
     AuthModule,
     CarerProfileModule,
     ClientModule,
-    StripeModule.forRoot(config.stripe.secret, { apiVersion: '2023-10-16' }),
+    StripeModule.forRoot(config.stripe.secret, {
+      apiVersion: '2023-10-16',
+    }),
     ApplicationRequestModule,
     FilesModule,
   ],

@@ -7,9 +7,9 @@ import {
   IsPhoneNumber,
   IsNotEmpty,
 } from 'class-validator';
-import { Client } from '@prisma/client';
+import { Client, User } from '@prisma/client';
 
-export class CreateClientDto implements Partial<Client> {
+export class CreateClientDto implements Partial<User> {
   @IsEmail()
   @IsNotEmpty()
   email: string;

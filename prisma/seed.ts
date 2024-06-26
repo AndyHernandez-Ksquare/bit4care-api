@@ -77,7 +77,20 @@ async function main() {
       availability: { test: true },
       qualifications: 'Certified',
       residency_status: 'Permanent',
-      years_of_experience: '5',
+      years_of_experience: 5,
+      birth_date: '1990-01-01',
+      colony: 'test',
+      CURP: 'test',
+      gender: 'Male',
+      has_driving_license: true,
+      license_type: 'Class C',
+      marital_status: 'Single',
+      nationality: 'Mexican',
+      is_approved: false,
+      NSS: 'test',
+      postal_code: 'test',
+      RFC: 'test',
+      state: 'test',
       speciality: 'Pediatrics',
       motivation_letter: 'Passionate about caregiving',
       test_score: 90,
@@ -94,7 +107,19 @@ async function main() {
       availability: { test2: true },
       qualifications: 'NOT Certified',
       residency_status: 'Temporal',
-      years_of_experience: '5',
+      years_of_experience: 15,
+      birth_date: '1990-01-01',
+      colony: 'test',
+      CURP: 'test',
+      gender: 'Male',
+      has_driving_license: false,
+      marital_status: 'Single',
+      nationality: 'Mexican',
+      is_approved: true,
+      NSS: 'test',
+      postal_code: 'test',
+      RFC: 'test',
+      state: 'test',
       speciality: 'Pediatrics',
       motivation_letter: 'Passionate about caregiving',
       test_score: 90,
@@ -116,24 +141,36 @@ async function main() {
   // Create client
   const client1 = await prisma.client.create({
     data: {
-      email: 'client@example.com',
-      phone: '555-1234',
-      name: 'John Doe',
-      password: encrypt('password456'),
       is_active: true,
-      address: 'Some address',
-      stripeAccountId: stripeAccount2.id,
     },
   });
 
   const client2 = await prisma.client.create({
     data: {
+      is_active: true,
+    },
+  });
+
+  const userClient1 = await prisma.user.create({
+    data: {
+      email: 'client@example.com',
+      phone: '555-1234',
+      name: 'John Doe',
+      password: encrypt('password456'),
+      address: 'Some address',
+      role: 'CLIENT',
+      clientId: client1.id,
+    },
+  });
+
+  const userClient2 = await prisma.user.create({
+    data: {
       email: 'client2@example.com',
       phone: '555-1234',
       name: 'Jane Doe',
       password: encrypt('password456'),
-      is_active: true,
       address: 'Some address',
+      clientId: client2.id,
     },
   });
 

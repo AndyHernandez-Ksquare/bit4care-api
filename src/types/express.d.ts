@@ -1,5 +1,4 @@
-// src/types/express.d.ts
-
+import 'express-session';
 import { Request } from 'express';
 
 declare global {
@@ -7,5 +6,11 @@ declare global {
     interface Request {
       where?: Record<string, any>;
     }
+  }
+}
+
+declare module 'express-session' {
+  interface SessionData {
+    state: string;
   }
 }

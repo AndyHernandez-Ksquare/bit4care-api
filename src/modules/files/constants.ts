@@ -5,7 +5,4 @@ export enum ValidActionsEnum {
   clientProfilePic = 'clientProfilePic',
 }
 
-export const validActions = [
-  ValidActionsEnum.userProfilePic,
-  ValidActionsEnum.clientProfilePic,
-];
+export const validActions = [ValidActionsEnum.userProfilePic];
