@@ -8,7 +8,7 @@ import { UserRole } from 'src/common/enums';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
-export class IsCarerActiveGuard implements CanActivate {
+export class IsClientActiveGuard implements CanActivate {
   constructor(private readonly prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -22,12 +22,12 @@ export class IsCarerActiveGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
 
-    const carer = await this.prisma.carerProfile.findFirst({
+    const client = await this.prisma.client.findFirst({
       where: { User: { id: user.id } },
     });
 
-    if (carer.is_active === false) {
-      throw new UnauthorizedException('Carer is not active');
+    if (client.is_active === false) {
+      throw new UnauthorizedException('Client is not active');
     }
 
     return true;

@@ -5,7 +5,6 @@ import {
   Body,
   Req,
   UseGuards,
-  ForbiddenException,
   Patch,
   Param,
   Delete,
@@ -19,13 +18,14 @@ import { UserRole } from 'src/common/enums';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/role.guard';
+import { IsClientActiveGuard } from './guards/is-client-active.guard';
 
 @Controller('client')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
   @Get('self')
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard, IsClientActiveGuard)
   @Roles(UserRole.CLIENT)
   async getSelf(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;
@@ -42,18 +42,29 @@ export class ClientController {
     return await this.clientService.create(createClientDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.clientService.findAll();
-  // }
+  @Get('admin')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  findAll() {
+    return this.clientService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.clientService.findOne(+id);
-  // }
+  @Get(':id')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.CARER)
+  findOne(@Param('id') id: string) {
+    return this.clientService.findOne(+id);
+  }
+
+  @Patch('admin/desactivate-client/:clientId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  handleDesactivateCarer(@Param('clientId') clientId: string) {
+    return this.clientService.desactivateClient(+clientId);
+  }
 
   @Patch('self')
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard, IsClientActiveGuard)
   @Roles(UserRole.CLIENT)
   update(@Req() req: Request, @Body() updateClientDto: UpdateClientDto) {
     const reqUser = req.user as JwtPayload;
@@ -61,8 +72,8 @@ export class ClientController {
     return this.clientService.update(+reqUser.id, updateClientDto);
   }
 
-  @Patch('toggle-favorite-carer/:carerId')
-  @UseGuards(JwtGuard, RolesGuard)
+  @Patch('carer/toggle-favorite-carer/:carerId')
+  @UseGuards(JwtGuard, RolesGuard, IsClientActiveGuard)
   @Roles(UserRole.CLIENT)
   toggleFavoriteCarer(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;
@@ -71,8 +82,8 @@ export class ClientController {
     return this.clientService.toggleFavoriteCarer(+reqUser.id, carerId);
   }
 
-  @Get('get-carers-with-favorites')
-  @UseGuards(JwtGuard, RolesGuard)
+  @Get('carer/get-carers-with-favorites')
+  @UseGuards(JwtGuard, RolesGuard, IsClientActiveGuard)
   @Roles(UserRole.CLIENT)
   handleGetCarersWithFavorite(@Req() req: Request) {
     const reqUser = req.user as JwtPayload;

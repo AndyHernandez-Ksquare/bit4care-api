@@ -73,6 +73,7 @@ export class CarerProfileService {
         favoriteCarers: true,
         User: { select: { id: true, name: true, email: true } },
       },
+      where: { is_approved: true },
     });
     return carers;
   }

@@ -20,6 +20,7 @@ export class ClientService {
         email: true,
         stripeAccountId: true,
         address: true,
+        role: true,
         file: { where: { is_profile_pic: true } },
         client: true,
       },
@@ -61,12 +62,27 @@ export class ClientService {
     return client;
   }
 
-  findAll() {
-    return `This action returns all client`;
+  async findAll() {
+    const clients = await this.prisma.client.findMany({
+      where: { is_active: true },
+      include: {
+        User: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    return clients;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async findOne(id: number) {
+    const client = await this.prisma.client.findUnique({
+      where: { id },
+      include: {
+        User: { select: { id: true, name: true, email: true } },
+      },
+    });
+    if (!client) throw new NotFoundException('Client not found');
+
+    return client;
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
@@ -126,6 +142,7 @@ export class ClientService {
     });
     return carers;
   }
+
   async deleteClient(id: number) {
     const user = await this.prisma.user.findUnique({
       where: { id, role: UserRole.CLIENT },
@@ -133,5 +150,22 @@ export class ClientService {
     if (!user) throw new NotFoundException('Client not found');
 
     await this.prisma.user.delete({ where: { id } });
+  }
+
+  async desactivateClient(clientId: number) {
+    const client = await this.prisma.client.findUnique({
+      where: { id: clientId },
+    });
+
+    if (!client) throw new NotFoundException("Client doesn't exist");
+
+    const updatedClient = await this.prisma.client.update({
+      where: { id: clientId },
+      data: {
+        is_active: false,
+      },
+    });
+
+    return updatedClient;
   }
 }
