@@ -18,18 +18,13 @@ export class ApplicationRequestService {
   }
 
   async findAll(req: Request, date: string, status: string) {
-    // TODO: Fix status filter not working
-    console.log(status, date);
-    const filters = {
-      ...req.where,
-      createdAt: date ? { gte: new Date(date) } : undefined,
-      status: status ? { equals: status } : undefined,
-    };
-
     const applicationRequest = await this.prisma.applicationRequest.findMany({
-      where: filters,
+      where: {
+        ...req.where,
+        createdAt: date ? { gte: new Date(date) } : undefined,
+        status: status ? { equals: status, mode: 'insensitive' } : undefined,
+      },
     });
-    console.log(applicationRequest);
     return applicationRequest;
   }
 
