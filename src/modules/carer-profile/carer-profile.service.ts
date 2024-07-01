@@ -105,19 +105,31 @@ export class CarerProfileService {
       },
     });
 
-    return carer;
+    return updatedCarer;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} carerProfile`;
+  async findOne(id: number) {
+    const carer = await this.prisma.carerProfile.findUnique({
+      where: { id },
+      include: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            last_login: true,
+          },
+        },
+      },
+    });
+    return carer;
   }
 
   async update(id: number, updateCarerProfileDto: UpdateCarerProfileDto) {
     const carerProfile = await this.prisma.carerProfile.findFirst({
       where: { User: { id } },
     });
-
-    if (!carerProfile) throw new NotFoundException("Carer doesn't exist");
 
     const updatedCarerProfile = await this.prisma.carerProfile.update({
       where: { id: carerProfile.id },
@@ -135,7 +147,6 @@ export class CarerProfileService {
     const carerProfile = await this.prisma.carerProfile.findUnique({
       where: { id },
     });
-    if (!carerProfile) throw new NotFoundException("Carer doesn't exist");
 
     if (carerProfile.reviewed)
       throw new ForbiddenException('Carer has already been reviewed');

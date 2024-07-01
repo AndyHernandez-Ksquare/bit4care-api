@@ -114,7 +114,6 @@ export class FilesService implements OnModuleInit {
 
   async deleteFileInDBAndS3(id: number) {
     const file = await this.prisma.file.findUnique({ where: { id } });
-    if (!file) throw new NotFoundException();
     await this.prisma.file.delete({ where: { id } });
     const deleteParams = {
       Bucket: this.bucketName,

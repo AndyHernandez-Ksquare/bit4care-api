@@ -32,13 +32,16 @@ export class CarerProfileController {
 
   @Get()
   @UseGuards(JwtGuard)
+  @Roles(UserRole.ADMIN, UserRole.CLIENT)
   findAll() {
     return this.carerProfileService.findAll();
   }
 
-  @Get('/:id')
-  findOne(@Param('id') id: string) {
-    return this.carerProfileService.findOne(+id);
+  @Get('test/:carerId')
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.CLIENT)
+  findOne(@Param('carerId') carerId: string) {
+    return this.carerProfileService.findOne(+carerId);
   }
 
   @Get('admin/list-carers-pedning-to-approve')

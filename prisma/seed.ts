@@ -170,6 +170,7 @@ async function main() {
       name: 'Jane Doe',
       password: encrypt('password456'),
       address: 'Some address',
+      role: 'CLIENT',
       clientId: client2.id,
     },
   });

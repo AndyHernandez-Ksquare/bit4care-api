@@ -26,8 +26,6 @@ export class ClientService {
       },
     });
 
-    if (!client) throw new NotFoundException('Client not found');
-
     return client;
   }
 
@@ -96,15 +94,11 @@ export class ClientService {
         },
       },
     });
-    if (!client) throw new NotFoundException('Client not found');
 
     return client;
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
-    const client = await this.prisma.client.findUnique({ where: { id } });
-    if (!client) throw new NotFoundException('Client not found');
-
     const updatedClient = await this.prisma.client.update({
       where: { id },
       data: { User: { update: updateClientDto } },
@@ -160,21 +154,10 @@ export class ClientService {
   }
 
   async deleteClient(id: number) {
-    const user = await this.prisma.user.findUnique({
-      where: { id, role: UserRole.CLIENT },
-    });
-    if (!user) throw new NotFoundException('Client not found');
-
     await this.prisma.user.delete({ where: { id } });
   }
 
   async desactivateClient(clientId: number) {
-    const client = await this.prisma.client.findUnique({
-      where: { id: clientId },
-    });
-
-    if (!client) throw new NotFoundException("Client doesn't exist");
-
     const updatedClient = await this.prisma.client.update({
       where: { id: clientId },
       data: {
