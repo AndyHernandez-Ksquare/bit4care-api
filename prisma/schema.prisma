@@ -168,13 +168,14 @@ model ConfirmationCode {
 }
 
 model File {
-  id             Int      @id @default(autoincrement())
-  name           String
-  key            String
-  type           String
-  is_profile_pic Boolean  @default(false)
-  userId         Int?
-  user           User?    @relation(fields: [userId], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id                Int      @id @default(autoincrement())
+  name              String
+  key               String
+  type              String
+  is_profile_pic    Boolean  @default(false)
+  is_motivation_vid Boolean  @default(false)
+  userId            Int?
+  user              User?    @relation(fields: [userId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

@@ -83,14 +83,13 @@ export class PrismaService
           Expires: 3600,
         };
         if (Array.isArray(result)) {
-          result.forEach(async (file) => {
+          for (const file of result) {
             getParams.Key = file?.key;
 
             if (file) {
-              const url = await this.getFileReadUrl(getParams);
-              file.url = url;
+              file.url = await this.getFileReadUrl(getParams);
             }
-          });
+          }
         } else {
           getParams.Key = result?.key;
 

@@ -13,6 +13,8 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
+import { FilterOwner } from '../auth/decorators/filter-owner.decorator';
+import { FilterOwnerGuard } from '../auth/guards/filter-owner.guard';
 
 @Controller('files')
 export class FilesController {
@@ -33,11 +35,25 @@ export class FilesController {
   }
 
   @Get('presigned-url/:id')
-  @UseGuards(JwtGuard)
-  async getPresignedUrlForGet(@Param('id') id: string) {
+  @UseGuards(JwtGuard, FilterOwnerGuard)
+  @FilterOwner('userId')
+  async getPresignedUrlForGet(@Param('id') id: string, @Req() req: Request) {
     const parsedId = parseInt(id);
     if (isNaN(parsedId)) throw new BadRequestException('Invalid id');
-    const { file } = await this.filesService.getFileReadUrl(parsedId);
+    const { file } = await this.filesService.getFileReadUrl(parsedId, req);
+    return file;
+  }
+
+  @Get('user/presigned-url/:userId')
+  @UseGuards(JwtGuard, FilterOwnerGuard)
+  @FilterOwner('userId')
+  async getUserPresignedUrlForGet(
+    @Param('userId') userId: string,
+    @Req() req: Request,
+  ) {
+    const parsedId = parseInt(userId);
+    if (isNaN(parsedId)) throw new BadRequestException('Invalid id');
+    const { file } = await this.filesService.getUserFileReadUrl(parsedId, req);
     return file;
   }
 }

@@ -1,8 +1,8 @@
-export const validTypes = ['jpg', 'jpeg', 'png'];
+export const validImageTypes = ['jpg', 'jpeg', 'png'];
+export const validVideoTypes = ['mp4', 'avi', 'mov'];
 
 export enum ValidActionsEnum {
   userProfilePic = 'userProfilePic',
-  clientProfilePic = 'clientProfilePic',
 }
 
 export const validActions = [ValidActionsEnum.userProfilePic];

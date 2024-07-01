@@ -10,8 +10,13 @@ import { config } from '../../config';
 import { PrismaService } from 'src/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { File } from '@prisma/client';
-import { ValidActionsEnum, validTypes } from './constants';
+import {
+  ValidActionsEnum,
+  validImageTypes,
+  validVideoTypes,
+} from './constants';
 import { CreateFileDto } from './dto/create-file.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class FilesService implements OnModuleInit {
@@ -51,11 +56,14 @@ export class FilesService implements OnModuleInit {
   ): Promise<{ url: string; file: File }> {
     const { name, type, action } = createFile;
 
-    if (!validTypes.includes(type)) {
+    if (![...validImageTypes, ...validVideoTypes].includes(type)) {
       throw new BadRequestException('Invalid file type');
     }
 
-    const key = `${type}/${uuidv4()}`;
+    const isImage = validImageTypes.includes(type);
+    const isVideo = validVideoTypes.includes(type);
+    const key = `${isImage ? 'image' : 'video'}/${type}/${userId}/${uuidv4()}`;
+
     // Save file information to database
     let fileData: Partial<File> = {
       key,
@@ -63,6 +71,7 @@ export class FilesService implements OnModuleInit {
       type,
       userId,
       is_profile_pic: action === ValidActionsEnum.userProfilePic ? true : false,
+      is_motivation_vid: isVideo ? true : false,
     };
 
     if (action === ValidActionsEnum.userProfilePic) {
@@ -72,17 +81,25 @@ export class FilesService implements OnModuleInit {
       if (existingProfilePic) {
         await this.deleteFileInDBAndS3(existingProfilePic.id);
       }
+    } else if (isVideo) {
+      const existingVideo = await this.prisma.file.findFirst({
+        where: { userId, is_motivation_vid: true },
+      });
+      if (existingVideo) {
+        await this.deleteFileInDBAndS3(existingVideo.id);
+      }
     }
 
     const file = await this.prisma.file.create({
       data: fileData as File,
     });
 
+    const contentType = isImage ? `image/${type}` : `video/${type}`;
     const uploadParams = {
       Bucket: this.bucketName,
       Key: file.key,
       Expires: 300,
-      ContentType: `image/${type}`,
+      ContentType: contentType,
     };
 
     const url = await this.s3
@@ -96,20 +113,27 @@ export class FilesService implements OnModuleInit {
     return { url, file };
   }
 
-  async getFileReadUrl(id: number): Promise<{ file: File }> {
+  async getFileReadUrl(id: number, req: Request): Promise<{ file: File }> {
     const file = await this.prisma.file.findUnique({
-      where: { id },
+      where: { id, ...req.where },
     });
 
     if (!file) throw new NotFoundException();
 
-    const getParams = {
-      Bucket: this.bucketName,
-      Key: file.key,
-      Expires: 3600,
-    };
-
     return { file };
+  }
+
+  async getUserFileReadUrl(
+    userId: number,
+    req: Request,
+  ): Promise<{ file: File[] }> {
+    const files = await this.prisma.file.findMany({
+      where: { userId, ...req.where },
+    });
+
+    if (!files) throw new NotFoundException();
+
+    return { file: files };
   }
 
   async deleteFileInDBAndS3(id: number) {
