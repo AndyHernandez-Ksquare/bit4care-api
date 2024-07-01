@@ -8,19 +8,21 @@ import { config } from 'src/config';
 import { CreateConfirmationCode } from './dto/create-confirmation-code';
 import { encrypt, decrypt } from '../../common/utils';
 import { ChangePasswordDto } from './dto/change-password-dto';
+import { TwilioService } from './twilio.service';
 
 @Injectable()
 export class AuthService {
-  private sns: AWS.SNS;
+  // private sns: AWS.SNS;
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private twilioService: TwilioService,
   ) {
-    this.sns = new AWS.SNS({
-      region: config.aws.region,
-      accessKeyId: config.aws.accessKey,
-      secretAccessKey: config.aws.secretKey,
-    });
+    // this.sns = new AWS.SNS({
+    //   region: config.aws.region,
+    //   accessKeyId: config.aws.accessKey,
+    //   secretAccessKey: config.aws.secretKey,
+    // });
   }
 
   generateCode(length: number = 6): string {
@@ -104,7 +106,7 @@ export class AuthService {
     };
 
     try {
-      await this.sns.publish(params).promise();
+      await this.twilioService.sendVerificationSms(phoneNumber, message);
     } catch (error) {
       console.error('Error sending SMS:', error);
     }

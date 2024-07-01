@@ -8,6 +8,11 @@ export const config = {
     secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN || '1h',
   },
+  twilio: {
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER,
+  },
   stripe: {
     secret: process.env.STRIPE_SECRET_KEY,
     clientId: process.env.STRIPE_CLIENT_ID,
