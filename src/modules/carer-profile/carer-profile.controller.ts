@@ -67,7 +67,7 @@ export class CarerProfileController {
     return this.carerProfileService.update(+id, updateCarerProfileDto);
   }
 
-  @Patch('admin/approve-deny-carer/:carerId')
+  @Patch('admin/review-carer/:carerId')
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   handleApproveCarer(

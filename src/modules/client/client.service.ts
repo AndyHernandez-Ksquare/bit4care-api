@@ -66,7 +66,15 @@ export class ClientService {
     const clients = await this.prisma.client.findMany({
       where: { is_active: true },
       include: {
-        User: { select: { id: true, name: true, email: true } },
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            last_login: true,
+          },
+        },
       },
     });
 
@@ -77,7 +85,15 @@ export class ClientService {
     const client = await this.prisma.client.findUnique({
       where: { id },
       include: {
-        User: { select: { id: true, name: true, email: true } },
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            last_login: true,
+          },
+        },
       },
     });
     if (!client) throw new NotFoundException('Client not found');

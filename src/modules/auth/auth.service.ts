@@ -44,6 +44,10 @@ export class AuthService {
     if (!user) return null;
 
     if (password === user.password) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { last_login: new Date() },
+      });
       return this.jwtService.sign({
         email: user.email,
         role: user.role,
@@ -119,7 +123,6 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
-    console.log(user.password);
     if (!user || user.password !== changePasswordDto.oldPassword)
       throw new BadRequestException(
         'User not found, or current password is incorrect',
