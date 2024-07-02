@@ -2,7 +2,7 @@
 import { IsString, IsInt, IsDate } from 'class-validator';
 import { PaymentHistory } from '@prisma/client';
 
-export class CreatePaymentHistoryDto implements PaymentHistory {
+export class CreatePaymentHistoryDto implements Partial<PaymentHistory> {
   @IsInt()
   id: number;
 

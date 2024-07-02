@@ -2,7 +2,9 @@ import { PaymentHistory, AllowedPaymentMethod } from '@prisma/client';
 // src/allowed-payment-methods/dto/create-allowed-payment-method.dto.ts
 import { IsInt, IsString, IsArray, IsOptional } from 'class-validator';
 
-export class CreateAllowedPaymentMethodDto implements AllowedPaymentMethod {
+export class CreateAllowedPaymentMethodDto
+  implements Partial<AllowedPaymentMethod>
+{
   @IsInt()
   id: number;
 

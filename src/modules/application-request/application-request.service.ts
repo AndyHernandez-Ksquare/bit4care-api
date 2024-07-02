@@ -17,9 +17,13 @@ export class ApplicationRequestService {
     return applicationRequest;
   }
 
-  async findAll(req: Request) {
+  async findAll(req: Request, date: string, status: string) {
     const applicationRequest = await this.prisma.applicationRequest.findMany({
-      where: req.where,
+      where: {
+        ...req.where,
+        createdAt: date ? { gte: new Date(date) } : undefined,
+        status: status ? { equals: status, mode: 'insensitive' } : undefined,
+      },
     });
     return applicationRequest;
   }

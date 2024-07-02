@@ -35,17 +35,20 @@ model User {
   client          Client?          @relation(fields: [clientId], references: [id])
   paymentHistory  PaymentHistory[]
   address         String?
+  file            File[]
+  last_login      DateTime         @default(now())
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  file            File[]
 }
 
 model Client {
   id                 Int                  @id @default(autoincrement())
-  is_active          Boolean
+  is_active          Boolean              @default(true)
   applicationRequest ApplicationRequest[]
   favoriteCarers     FavoriteCarers[]
   User               User?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
 }
 
 model CarerProfile {
@@ -58,7 +61,7 @@ model CarerProfile {
   speciality          String
   motivation_letter   String
   test_score          Int
-  is_active           Boolean
+  is_active           Boolean              @default(true)
   worked_hours        Int
   description         String
   completed_services  Int
@@ -75,11 +78,13 @@ model CarerProfile {
   NSS                 String
   has_driving_license Boolean
   license_type        String?
-  reviewed             Boolean? @default(false)
+  reviewed            Boolean?             @default(false)
   favoriteCarers      FavoriteCarers[]
   carerReviews        CarerReview[]
   User                User?
   applicationRequest  ApplicationRequest[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 }
 
 model PaymentHistory {
@@ -92,42 +97,52 @@ model PaymentHistory {
   userId         Int
   user           User                 @relation(fields: [userId], references: [id])
   allowedMethod  AllowedPaymentMethod @relation(fields: [payment_method], references: [payment_method])
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 }
 
 model AllowedPaymentMethod {
   id             Int              @id @default(autoincrement())
   payment_method String           @unique
   PaymentHistory PaymentHistory[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 }
 
 model StripeAccount {
-  id                           Int    @id @default(autoincrement())
-  stripe_customer_id           String @unique
+  id                           Int      @id @default(autoincrement())
+  stripe_customer_id           String   @unique
   default_payment_method_token String
   additional_payment_methods   Int
   user                         User?
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
 }
 
 model FavoriteCarers {
-  id       Int           @id @default(autoincrement())
-  carerId  Int
-  carer    CarerProfile? @relation(fields: [carerId], references: [id])
-  clientId Int
-  client   Client?       @relation(fields: [clientId], references: [id])
+  id        Int           @id @default(autoincrement())
+  carerId   Int
+  carer     CarerProfile? @relation(fields: [carerId], references: [id])
+  clientId  Int
+  client    Client?       @relation(fields: [clientId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 model CarerReview {
-  id      Int           @id @default(autoincrement())
-  stars   Int
-  comment String
-  carerId Int?
-  carer   CarerProfile? @relation(fields: [carerId], references: [id])
+  id        Int           @id @default(autoincrement())
+  stars     Int
+  comment   String
+  carerId   Int?
+  carer     CarerProfile? @relation(fields: [carerId], references: [id])
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 }
 
 model ApplicationRequest {
   id            Int           @id @default(autoincrement())
   time_range    String
-  status        String?
+  status        String
   address       String?
   patient_name  String
   patient_phone String
@@ -138,6 +153,8 @@ model ApplicationRequest {
   amount        Int
   carerId       Int?
   carer         CarerProfile? @relation(fields: [carerId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model ConfirmationCode {
@@ -146,14 +163,19 @@ model ConfirmationCode {
   recipient   String   @unique
   is_verified Boolean
   expiration  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model File {
-  id             Int     @id @default(autoincrement())
-  name           String
-  key            String
-  type           String
-  is_profile_pic Boolean @default(false)
-  userId         Int?
-  user           User?   @relation(fields: [userId], references: [id])
+  id                Int      @id @default(autoincrement())
+  name              String
+  key               String
+  type              String
+  is_profile_pic    Boolean  @default(false)
+  is_motivation_vid Boolean  @default(false)
+  userId            Int?
+  user              User?    @relation(fields: [userId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }

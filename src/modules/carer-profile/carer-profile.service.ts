@@ -68,21 +68,68 @@ export class CarerProfileService {
 
   async findAll() {
     const carers = await this.prisma.carerProfile.findMany({
-      include: { carerReviews: true, favoriteCarers: true },
+      include: {
+        carerReviews: true,
+        favoriteCarers: true,
+        User: { select: { id: true, name: true, email: true } },
+      },
+      where: { is_approved: true },
     });
     return carers;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} carerProfile`;
+  async findAllCarersPendingToApprove() {
+    const carers = await this.prisma.carerProfile.findMany({
+      include: {
+        carerReviews: true,
+        favoriteCarers: true,
+        User: { select: { id: true, name: true, email: true } },
+      },
+      where: { is_approved: false, reviewed: false },
+    });
+    return carers;
+  }
+
+  // TODO: This should send a notification
+  async desactivateCarer(carerId: number) {
+    const carer = await this.prisma.carerProfile.findUnique({
+      where: { id: carerId },
+    });
+
+    if (!carer) throw new NotFoundException("Carer doesn't exist");
+
+    const updatedCarer = await this.prisma.carerProfile.update({
+      where: { id: carerId },
+      data: {
+        is_active: false,
+      },
+    });
+
+    return updatedCarer;
+  }
+
+  async findOne(id: number) {
+    const carer = await this.prisma.carerProfile.findUnique({
+      where: { id },
+      include: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            last_login: true,
+          },
+        },
+      },
+    });
+    return carer;
   }
 
   async update(id: number, updateCarerProfileDto: UpdateCarerProfileDto) {
     const carerProfile = await this.prisma.carerProfile.findFirst({
       where: { User: { id } },
     });
-
-    if (!carerProfile) throw new NotFoundException("Carer doesn't exist");
 
     const updatedCarerProfile = await this.prisma.carerProfile.update({
       where: { id: carerProfile.id },
@@ -92,36 +139,45 @@ export class CarerProfileService {
     return updatedCarerProfile;
   }
 
-  async approveCarer(id: number, cceptCarerProfileDto: AcceptCarerProfileDto) {
+  // TODO: Notify the user if he was accepted or dennied
+  async approveOrDenyCarer(
+    id: number,
+    acceptCarerProfileDto: AcceptCarerProfileDto,
+  ) {
     const carerProfile = await this.prisma.carerProfile.findUnique({
       where: { id },
     });
-    if (!carerProfile) throw new NotFoundException("Carer doesn't exist");
 
     if (carerProfile.reviewed)
       throw new ForbiddenException('Carer has already been reviewed');
 
-    const updatedCarerProfile = await this.prisma.user.update({
-      data: {
-        carer: {
-          update: {
-            is_approved: cceptCarerProfileDto.is_approved,
-            reviewed: true,
+    if (acceptCarerProfileDto.is_approved) {
+      const updatedCarerProfile = await this.prisma.user.update({
+        data: {
+          carer: {
+            update: {
+              is_approved: acceptCarerProfileDto.is_approved,
+              reviewed: true,
+            },
           },
         },
-      },
-      where: { carerId: id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        address: true,
-        role: true,
-        carer: true,
-      },
-    });
+        where: { carerId: id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          address: true,
+          role: true,
+          carer: true,
+        },
+      });
 
-    return updatedCarerProfile;
+      return updatedCarerProfile;
+    }
+    await this.prisma.carerProfile.delete({
+      where: { id },
+    });
+    return;
   }
 
   remove(id: number) {

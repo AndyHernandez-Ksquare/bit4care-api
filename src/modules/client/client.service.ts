@@ -20,12 +20,11 @@ export class ClientService {
         email: true,
         stripeAccountId: true,
         address: true,
+        role: true,
         file: { where: { is_profile_pic: true } },
         client: true,
       },
     });
-
-    if (!client) throw new NotFoundException('Client not found');
 
     return client;
   }
@@ -61,18 +60,45 @@ export class ClientService {
     return client;
   }
 
-  findAll() {
-    return `This action returns all client`;
+  async findAll() {
+    const clients = await this.prisma.client.findMany({
+      where: { is_active: true },
+      include: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            last_login: true,
+          },
+        },
+      },
+    });
+
+    return clients;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async findOne(id: number) {
+    const client = await this.prisma.client.findUnique({
+      where: { id },
+      include: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            last_login: true,
+          },
+        },
+      },
+    });
+
+    return client;
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
-    const client = await this.prisma.client.findUnique({ where: { id } });
-    if (!client) throw new NotFoundException('Client not found');
-
     const updatedClient = await this.prisma.client.update({
       where: { id },
       data: { User: { update: updateClientDto } },
@@ -126,7 +152,19 @@ export class ClientService {
     });
     return carers;
   }
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+
+  async deleteClient(id: number) {
+    await this.prisma.user.delete({ where: { id } });
+  }
+
+  async desactivateClient(clientId: number) {
+    const updatedClient = await this.prisma.client.update({
+      where: { id: clientId },
+      data: {
+        is_active: false,
+      },
+    });
+
+    return updatedClient;
   }
 }

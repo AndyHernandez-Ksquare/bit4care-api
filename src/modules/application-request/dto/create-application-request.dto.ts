@@ -41,4 +41,8 @@ export class CreateApplicationRequestDto
   @IsInt()
   @IsNotEmpty()
   carerId: number;
+
+  @IsString()
+  @IsNotEmpty()
+  status: string;
 }

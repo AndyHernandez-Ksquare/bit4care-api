@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Query,
+} from '@nestjs/common';
 import { ApplicationRequestService } from './application-request.service';
 import { CreateApplicationRequestDto } from './dto/create-application-request.dto';
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -9,6 +17,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from 'src/common/enums';
 import { FilterOwner } from '../auth/decorators/filter-owner.decorator';
 import { FilterOwnerGuard } from '../auth/guards/filter-owner.guard';
+import { IsClientActiveGuard } from '../client/guards/is-client-active.guard';
 
 @Controller('application-request')
 export class ApplicationRequestController {
@@ -17,7 +26,7 @@ export class ApplicationRequestController {
   ) {}
 
   @Post()
-  @UseGuards(JwtGuard, RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard, IsClientActiveGuard)
   @Roles(UserRole.ADMIN, UserRole.CLIENT)
   create(
     @Body() createApplicationRequestDto: CreateApplicationRequestDto,
@@ -31,11 +40,16 @@ export class ApplicationRequestController {
   }
 
   @Get()
-  @UseGuards(JwtGuard, RolesGuard, FilterOwnerGuard)
+  @UseGuards(JwtGuard, RolesGuard, FilterOwnerGuard, IsClientActiveGuard)
   @Roles(UserRole.ADMIN, UserRole.CLIENT)
   @FilterOwner('clientId')
-  findAll(@Req() req: Request) {
-    return this.applicationRequestService.findAll(req);
+  findAll(
+    @Req() req: Request,
+    @Query() query: { date: string; status: string },
+  ) {
+    const { date, status } = query;
+
+    return this.applicationRequestService.findAll(req, date, status);
   }
 
   // @Get(':id')

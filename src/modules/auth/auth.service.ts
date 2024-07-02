@@ -8,19 +8,21 @@ import { config } from 'src/config';
 import { CreateConfirmationCode } from './dto/create-confirmation-code';
 import { encrypt, decrypt } from '../../common/utils';
 import { ChangePasswordDto } from './dto/change-password-dto';
+import { TwilioService } from './twilio.service';
 
 @Injectable()
 export class AuthService {
-  private sns: AWS.SNS;
+  // private sns: AWS.SNS;
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private twilioService: TwilioService,
   ) {
-    this.sns = new AWS.SNS({
-      region: config.aws.region,
-      accessKeyId: config.aws.accessKey,
-      secretAccessKey: config.aws.secretKey,
-    });
+    // this.sns = new AWS.SNS({
+    //   region: config.aws.region,
+    //   accessKeyId: config.aws.accessKey,
+    //   secretAccessKey: config.aws.secretKey,
+    // });
   }
 
   generateCode(length: number = 6): string {
@@ -42,6 +44,10 @@ export class AuthService {
     if (!user) return null;
 
     if (password === user.password) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { last_login: new Date() },
+      });
       return this.jwtService.sign({
         email: user.email,
         role: user.role,
@@ -104,7 +110,7 @@ export class AuthService {
     };
 
     try {
-      await this.sns.publish(params).promise();
+      await this.twilioService.sendVerificationSms(phoneNumber, message);
     } catch (error) {
       console.error('Error sending SMS:', error);
     }
@@ -117,7 +123,6 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
-    console.log(user.password);
     if (!user || user.password !== changePasswordDto.oldPassword)
       throw new BadRequestException(
         'User not found, or current password is incorrect',

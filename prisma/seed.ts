@@ -170,6 +170,7 @@ async function main() {
       name: 'Jane Doe',
       password: encrypt('password456'),
       address: 'Some address',
+      role: 'CLIENT',
       clientId: client2.id,
     },
   });
@@ -186,6 +187,22 @@ async function main() {
       comments: 'Prefer morning hours',
       amount: 200,
       carerId: carerProfile1.id,
+      status: 'Pending',
+    },
+  });
+
+  const applicationRequest2 = await prisma.applicationRequest.create({
+    data: {
+      time_range: '6 AM - 1 PM',
+      address: 'Some address 2',
+      patient_name: 'John Doe',
+      patient_phone: '552345-5678',
+      clientId: client2.id,
+      description: 'Assistance with weekly tasks',
+      comments: 'Prefer morning hours',
+      amount: 500,
+      carerId: carerProfile1.id,
+      status: 'Active',
     },
   });
 

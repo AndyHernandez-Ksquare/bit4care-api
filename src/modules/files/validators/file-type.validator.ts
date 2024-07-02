@@ -1,5 +1,10 @@
 import { ValidationOptions, registerDecorator } from 'class-validator';
-import { ValidActionsEnum, validActions, validTypes } from '../constants';
+import {
+  ValidActionsEnum,
+  validActions,
+  validImageTypes,
+  validVideoTypes,
+} from '../constants';
 
 export function IsCorrectType(options?: ValidationOptions) {
   return (object: Record<string, any>, propertyName: string) => {
@@ -9,14 +14,16 @@ export function IsCorrectType(options?: ValidationOptions) {
       options,
       validator: {
         validate(type: string) {
-          const fileType = validTypes.some((ext) => type.endsWith(ext));
+          const fileType = [...validVideoTypes, ...validImageTypes].some(
+            (ext) => type.endsWith(ext),
+          );
           if (!fileType) {
             return false;
           }
           return true;
         },
         defaultMessage() {
-          return 'Invalid type received. Valid types are: jpg, jpeg, png';
+          return 'Invalid type received. Valid types are: jpg, jpeg, png for images, and mp4, avi, mov for videos';
         },
       },
     });
