@@ -112,8 +112,8 @@ model AllowedPaymentMethod {
 model StripeAccount {
   id                           Int      @id @default(autoincrement())
   stripe_customer_id           String   @unique
-  default_payment_method_token String
-  additional_payment_methods   Int
+  default_payment_method_token String?
+  additional_payment_methods   Int?
   user                         User?
   createdAt                    DateTime @default(now())
   updatedAt                    DateTime @updatedAt

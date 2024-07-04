@@ -1,9 +1,15 @@
 // stripe.service.ts
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
 import { Client, User, UserRole } from '@prisma/client';
+import { CreateCustomerDto } from '../payments/dto/create-customer';
 
 @Injectable()
 export class StripeService {
@@ -58,24 +64,65 @@ export class StripeService {
     return;
   }
 
-  async connectStripeAccount(code: string, userRole: string, userEmai: string) {
-    const response = await this.stripeClient.oauth.token({
-      grant_type: 'authorization_code',
-      code,
+  // async connectStripeAccount(code: string, userRole: string, userEmai: string) {
+  //   const response = await this.stripeClient.oauth.token({
+  //     grant_type: 'authorization_code',
+  //     code,
+  //   });
+
+  //   const stripeUserId = response.stripe_user_id;
+
+  //   const stripeClient = new Stripe(response.access_token, {
+  //     apiVersion: '2023-10-16',
+  //   });
+
+  //   const account = await stripeClient.accounts.retrieve(stripeUserId);
+  //   console.log(account);
+  //   // TODO, check if stripe account email is the same as userEmail param
+
+  //   await this.createStripeAccountInDB(stripeUserId, userRole, userEmai);
+
+  //   return { message: 'Account connected successfully' };
+  // }
+
+  async createCustomer(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { stripeAccount: true },
+    });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.stripeAccount)
+      throw new BadRequestException(
+        'User is already associated to a stripe customer',
+      );
+
+    const customer = await this.stripeClient.customers.create({
+      email: user.email,
+      name: user.name,
     });
 
-    const stripeUserId = response.stripe_user_id;
-
-    const stripeClient = new Stripe(response.access_token, {
-      apiVersion: '2023-10-16',
+    const updatedUser = await this.prisma.user.update({
+      data: {
+        stripeAccount: { create: { stripe_customer_id: customer.id } },
+      },
+      where: { id: user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        phone: true,
+        stripeAccountId: true,
+        stripeAccount: true,
+      },
     });
 
-    const account = await stripeClient.accounts.retrieve(stripeUserId);
-    // TODO, check if stripe account email is the same as userEmail param
+    return updatedUser;
+  }
 
-    await this.createStripeAccountInDB(stripeUserId, userRole, userEmai);
-
-    return { message: 'Account connected successfully' };
+  async createSetupIntent(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) throw new NotFoundException('User not found');
   }
 
   private async createStripeAccountInDB(
@@ -98,16 +145,10 @@ export class StripeService {
     });
 
     const updateData = { stripeAccountId: stripeAccount.id };
-    const updatePromise =
-      userRole === UserRole.CLIENT
-        ? this.prisma.client.update({
-            where: { id: user.id },
-            data: updateData,
-          })
-        : this.prisma.user.update({
-            where: { id: user.id },
-            data: updateData,
-          });
+    const updatePromise = this.prisma.user.update({
+      where: { id: user.id },
+      data: updateData,
+    });
 
     await updatePromise;
   }
