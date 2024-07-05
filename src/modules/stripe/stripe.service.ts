@@ -96,6 +96,15 @@ export class StripeService {
         'User is already associated to a stripe customer',
       );
 
+    // TODO: Uncomment code below when in production
+    // const existingCustomer = await this.stripeClient.customers.list({
+    //   email: user.email,
+    // });
+
+    // if (existingCustomer.data.length > 0) {
+    //   throw new BadRequestException('Customer already exists in stripe');
+    // }
+
     const customer = await this.stripeClient.customers.create({
       email: user.email,
       name: user.name,
@@ -121,35 +130,14 @@ export class StripeService {
   }
 
   async createSetupIntent(email: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) throw new NotFoundException('User not found');
-  }
-
-  private async createStripeAccountInDB(
-    stripeUserId: string,
-    userRole: string,
-    userEmail: string,
-  ) {
     const user = await this.prisma.user.findUnique({
-      where: { email: userEmail, role: userRole as UserRole },
+      where: { email },
+      include: { stripeAccount: true },
     });
+    if (!user) throw new NotFoundException('User not found');
 
-    if (!user) throw new BadRequestException("User doesn't exist");
-
-    const stripeAccount = await this.prisma.stripeAccount.create({
-      data: {
-        stripe_customer_id: stripeUserId,
-        default_payment_method_token: '',
-        additional_payment_methods: 0,
-      },
+    return await this.stripeClient.setupIntents.create({
+      customer: user.stripeAccount.stripe_customer_id,
     });
-
-    const updateData = { stripeAccountId: stripeAccount.id };
-    const updatePromise = this.prisma.user.update({
-      where: { id: user.id },
-      data: updateData,
-    });
-
-    await updatePromise;
   }
 }

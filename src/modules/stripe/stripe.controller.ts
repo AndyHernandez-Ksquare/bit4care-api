@@ -3,6 +3,7 @@ import { StripeService } from './stripe.service';
 import { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
+import { UserHasStripeAccountGuard } from './guards/user-has-stripe-account.guard';
 
 @Controller('stripe')
 export class StripeController {
@@ -17,7 +18,7 @@ export class StripeController {
   }
 
   @Post('create-setup-intent')
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, UserHasStripeAccountGuard)
   handleCreateSetupIntent(@Req() req: Request) {
     const { email } = req.user as JwtPayload;
 
