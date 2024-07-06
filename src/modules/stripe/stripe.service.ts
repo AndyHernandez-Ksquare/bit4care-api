@@ -140,4 +140,16 @@ export class StripeService {
       customer: user.stripeAccount.stripe_customer_id,
     });
   }
+
+  async createConnectedAccount(email: string) {
+    const account = await this.stripeClient.accounts.create({
+      type: 'express',
+      email: email,
+      capabilities: {
+        card_payments: { requested: true },
+        transfers: { requested: true },
+      },
+    });
+    return account;
+  }
 }

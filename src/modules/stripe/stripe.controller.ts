@@ -9,6 +9,14 @@ import { UserHasStripeAccountGuard } from './guards/user-has-stripe-account.guar
 export class StripeController {
   constructor(private readonly StripeService: StripeService) {}
 
+  @UseGuards(JwtGuard)
+  @Post('create-connected-account')
+  async createConnectedAccount(@Req() req: Request) {
+    const { email } = req.user as JwtPayload;
+
+    return await this.StripeService.createConnectedAccount(email);
+  }
+
   @Post('create-customer')
   @UseGuards(JwtGuard)
   handleCreateCustomer(@Req() req: Request) {
