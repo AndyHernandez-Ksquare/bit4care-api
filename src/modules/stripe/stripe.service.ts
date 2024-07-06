@@ -8,8 +8,7 @@ import {
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
-import { Client, User, UserRole } from '@prisma/client';
-import { CreateCustomerDto } from '../payments/dto/create-customer';
+import { CreatePaymentIntentDto } from '../payments/dto/create-payment-intent.dto';
 
 @Injectable()
 export class StripeService {
@@ -38,30 +37,31 @@ export class StripeService {
   }
 
   async createPaymentIntent(
-    clientId: number,
-    recipientId: number,
-    amount: number,
-  ): Promise<Stripe.PaymentIntent> {
-    const client = await this.prisma.user.findUnique({
-      where: { id: clientId },
-    });
-    const recipient = await this.prisma.user.findUnique({
-      where: { id: recipientId },
-    });
-
-    if (!client || !recipient) throw new Error('Client or recipient not found');
-
-    // const paymentIntent = await this.stripeClient.paymentIntents.create({
-    //   amount: amount * 100, // Stripe amount is in cents
-    //   currency: 'usd',
-    //   payment_method_types: ['card'],
-    //   transfer_data: {
-    //     destination: recipient.stripeAccount.id,
-    //   },
+    // clientId: number,
+    // recipientId: number,
+    CreatePaymentIntentDto: CreatePaymentIntentDto,
+  ): Promise<string> {
+    const { amount } = CreatePaymentIntentDto;
+    // const client = await this.prisma.user.findUnique({
+    //   where: { id: clientId },
+    // });
+    // const recipient = await this.prisma.user.findUnique({
+    //   where: { id: recipientId },
     // });
 
-    // return paymentIntent;
-    return;
+    // if (!client || !recipient) throw new Error('Client or recipient not found');
+
+    const paymentIntent = await this.stripeClient.paymentIntents.create({
+      amount: amount * 100, // Stripe amount is in cents
+      currency: 'mxn',
+      automatic_payment_methods: { enabled: true },
+      // payment_method_types: ['card'],
+      // transfer_data: {
+      //   destination: recipient.stripeAccount.id,
+      // },
+    });
+
+    return paymentIntent.client_secret;
   }
 
   // async connectStripeAccount(code: string, userRole: string, userEmai: string) {

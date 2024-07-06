@@ -1,9 +1,10 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { UserHasStripeAccountGuard } from './guards/user-has-stripe-account.guard';
+import { CreatePaymentIntentDto } from '../payments/dto/create-payment-intent.dto';
 
 @Controller('stripe')
 export class StripeController {
@@ -31,6 +32,14 @@ export class StripeController {
     const { email } = req.user as JwtPayload;
 
     return this.StripeService.createSetupIntent(email);
+  }
+
+  @Post('create-payment-intent')
+  @UseGuards(JwtGuard, UserHasStripeAccountGuard)
+  handleCreatePaymentIntent(
+    @Body() CreatePaymentIntentDto: CreatePaymentIntentDto,
+  ) {
+    return this.StripeService.createPaymentIntent(CreatePaymentIntentDto);
   }
 
   // @Get()
