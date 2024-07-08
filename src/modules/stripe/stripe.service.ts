@@ -37,31 +37,28 @@ export class StripeService {
   }
 
   async createPaymentIntent(
-    // clientId: number,
-    // recipientId: number,
     CreatePaymentIntentDto: CreatePaymentIntentDto,
-  ): Promise<string> {
+    email: string,
+  ): Promise<{ client_secret: string }> {
     const { amount } = CreatePaymentIntentDto;
-    // const client = await this.prisma.user.findUnique({
-    //   where: { id: clientId },
-    // });
-    // const recipient = await this.prisma.user.findUnique({
-    //   where: { id: recipientId },
-    // });
-
-    // if (!client || !recipient) throw new Error('Client or recipient not found');
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { stripeAccount: true },
+    });
 
     const paymentIntent = await this.stripeClient.paymentIntents.create({
       amount: amount * 100, // Stripe amount is in cents
       currency: 'mxn',
       automatic_payment_methods: { enabled: true },
-      // payment_method_types: ['card'],
+      // application_fee_amount: 500
       // transfer_data: {
       //   destination: recipient.stripeAccount.id,
       // },
+      // return_url
+      customer: user.stripeAccount.stripe_customer_id,
     });
 
-    return paymentIntent.client_secret;
+    return { client_secret: paymentIntent.client_secret };
   }
 
   // async connectStripeAccount(code: string, userRole: string, userEmai: string) {

@@ -1,14 +1,21 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { UserHasStripeAccountGuard } from './guards/user-has-stripe-account.guard';
 import { CreatePaymentIntentDto } from '../payments/dto/create-payment-intent.dto';
+import { config } from 'src/config';
 
 @Controller('stripe')
 export class StripeController {
   constructor(private readonly StripeService: StripeService) {}
+
+  @UseGuards(JwtGuard)
+  @Get('config')
+  handleGetConfig() {
+    return { publishableKey: config.stripe.publishableKey };
+  }
 
   @UseGuards(JwtGuard)
   @Post('create-connected-account')
@@ -38,8 +45,14 @@ export class StripeController {
   @UseGuards(JwtGuard, UserHasStripeAccountGuard)
   handleCreatePaymentIntent(
     @Body() CreatePaymentIntentDto: CreatePaymentIntentDto,
+    @Req() req: Request,
   ) {
-    return this.StripeService.createPaymentIntent(CreatePaymentIntentDto);
+    const { email } = req.user as JwtPayload;
+
+    return this.StripeService.createPaymentIntent(
+      CreatePaymentIntentDto,
+      email,
+    );
   }
 
   // @Get()
