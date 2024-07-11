@@ -6,6 +6,9 @@ import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { UserHasStripeAccountGuard } from './guards/user-has-stripe-account.guard';
 import { CreatePaymentIntentDto } from '../payments/dto/create-payment-intent.dto';
 import { config } from 'src/config';
+import { RolesGuard } from '../auth/guards/role.guard';
+import { UserRole, Client } from '@prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
 
 @Controller('stripe')
 export class StripeController {
@@ -17,12 +20,13 @@ export class StripeController {
     return { publishableKey: config.stripe.publishableKey };
   }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(UserRole.CARER)
   @Post('create-connected-account')
   async createConnectedAccount(@Req() req: Request) {
     const { email } = req.user as JwtPayload;
 
-    return await this.StripeService.createConnectedAccount(email);
+    return await this.StripeService.createExpressConnectedAccount(email);
   }
 
   @Post('create-customer')

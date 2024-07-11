@@ -9,6 +9,7 @@ import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
 import { CreatePaymentIntentDto } from '../payments/dto/create-payment-intent.dto';
+import { config } from 'src/config';
 
 @Injectable()
 export class StripeService {
@@ -88,10 +89,7 @@ export class StripeService {
       include: { stripeAccount: true },
     });
     if (!user) throw new NotFoundException('User not found');
-    if (user.stripeAccount)
-      throw new BadRequestException(
-        'User is already associated to a stripe customer',
-      );
+    if (user.stripeAccount) return 'User already has a stripe account';
 
     // TODO: Uncomment code below when in production
     // const existingCustomer = await this.stripeClient.customers.list({
@@ -138,7 +136,27 @@ export class StripeService {
     });
   }
 
-  async createConnectedAccount(email: string) {
+  async createExpressConnectedAccount(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { stripeAccount: true },
+    });
+
+    if (user.stripeAccount) {
+      await this.stripeClient.accountLinks.create({
+        account: user.stripeAccount.stripe_connected_account_id,
+        refresh_url: config.urls.frontEnd,
+        return_url: config.urls.frontEnd,
+        type: 'account_onboarding',
+      });
+
+      const loginLink = await this.stripeClient.accounts.createLoginLink(
+        user.stripeAccount.stripe_connected_account_id,
+      );
+
+      return loginLink;
+    }
+
     const account = await this.stripeClient.accounts.create({
       type: 'express',
       email: email,
@@ -147,6 +165,27 @@ export class StripeService {
         transfers: { requested: true },
       },
     });
-    return account;
+
+    await this.createCustomer(email);
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        stripeAccount: { update: { stripe_connected_account_id: account.id } },
+      },
+    });
+
+    await this.stripeClient.accountLinks.create({
+      account: account.id,
+      refresh_url: config.urls.frontEnd,
+      return_url: config.urls.frontEnd,
+      type: 'account_onboarding',
+    });
+
+    const loginLink = await this.stripeClient.accounts.createLoginLink(
+      account.id,
+    );
+
+    return loginLink;
   }
 }
