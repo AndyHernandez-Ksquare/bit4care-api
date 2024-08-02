@@ -104,11 +104,6 @@ export class AuthService {
   }
 
   async sendSms(phoneNumber: string, message: string): Promise<void> {
-    const params: AWS.SNS.PublishInput = {
-      Message: message,
-      PhoneNumber: phoneNumber,
-    };
-
     try {
       await this.twilioService.sendVerificationSms(phoneNumber, message);
     } catch (error) {
