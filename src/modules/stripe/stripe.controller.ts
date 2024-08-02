@@ -23,10 +23,18 @@ export class StripeController {
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.CARER)
   @Post('create-connected-account')
-  async createConnectedAccount(@Req() req: Request) {
+  async handleCreateExpressConnectedAccount(@Req() req: Request) {
     const { email } = req.user as JwtPayload;
 
     return await this.StripeService.createExpressConnectedAccount(email);
+  }
+  @UseGuards(JwtGuard, RolesGuard, UserHasStripeAccountGuard)
+  @Roles(UserRole.CARER)
+  @Post('create-connected-account')
+  async handleGetExpressLoginLink(@Req() req: Request) {
+    const { email } = req.user as JwtPayload;
+
+    return await this.StripeService.getExpressLoginLink(email);
   }
 
   @Post('create-customer')

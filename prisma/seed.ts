@@ -210,11 +210,12 @@ async function main() {
   const user1 = await prisma.user.create({
     data: {
       name: 'John Doe',
-      email: `john.doe@example.com`,
+      // email: `john.doe@example.com`,
+      email: `andyhernandez5102@gmail.com`,
       phone: '555-1234',
       password: encrypt('password123'),
       role: UserRole.CARER,
-      stripeAccountId: stripeAccount1.id,
+      // stripeAccountId: stripeAccount1.id,
       carerId: carerProfile1.id,
       address: 'Some address',
       paymentHistory: {

@@ -56,7 +56,7 @@ export class StripeService {
       //   destination: recipient.stripeAccount.id,
       // },
       // return_url
-      customer: user.stripeAccount.stripe_customer_id,
+      // customer: user.stripeAccount.stripe_customer_id,
     });
 
     return { client_secret: paymentIntent.client_secret };
@@ -143,18 +143,14 @@ export class StripeService {
     });
 
     if (user.stripeAccount) {
-      await this.stripeClient.accountLinks.create({
+      const onboardingLink = await this.stripeClient.accountLinks.create({
         account: user.stripeAccount.stripe_connected_account_id,
         refresh_url: config.urls.frontEnd,
         return_url: config.urls.frontEnd,
         type: 'account_onboarding',
       });
 
-      const loginLink = await this.stripeClient.accounts.createLoginLink(
-        user.stripeAccount.stripe_connected_account_id,
-      );
-
-      return loginLink;
+      return onboardingLink;
     }
 
     const account = await this.stripeClient.accounts.create({
@@ -175,17 +171,25 @@ export class StripeService {
       },
     });
 
-    await this.stripeClient.accountLinks.create({
+    const onboardingLink = await this.stripeClient.accountLinks.create({
       account: account.id,
       refresh_url: config.urls.frontEnd,
       return_url: config.urls.frontEnd,
       type: 'account_onboarding',
     });
 
-    const loginLink = await this.stripeClient.accounts.createLoginLink(
-      account.id,
-    );
+    return onboardingLink;
+  }
 
+  async getExpressLoginLink(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      include: { stripeAccount: true },
+    });
+
+    const loginLink = await this.stripeClient.accounts.createLoginLink(
+      user.stripeAccount.stripe_connected_account_id,
+    );
     return loginLink;
   }
 }
