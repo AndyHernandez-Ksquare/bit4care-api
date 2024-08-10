@@ -1,5 +1,3 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateCarerProfileDto } from './create-carer-profile.dto';
 import {
   IsEmail,
   IsNotEmpty,

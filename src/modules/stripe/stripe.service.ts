@@ -3,7 +3,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
-import { Client, User, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class StripeService {
@@ -34,7 +34,6 @@ export class StripeService {
   async createPaymentIntent(
     clientId: number,
     recipientId: number,
-    amount: number,
   ): Promise<Stripe.PaymentIntent> {
     const client = await this.prisma.user.findUnique({
       where: { id: clientId },
@@ -70,7 +69,7 @@ export class StripeService {
       apiVersion: '2023-10-16',
     });
 
-    const account = await stripeClient.accounts.retrieve(stripeUserId);
+    await stripeClient.accounts.retrieve(stripeUserId);
     // TODO, check if stripe account email is the same as userEmail param
 
     await this.createStripeAccountInDB(stripeUserId, userRole, userEmai);

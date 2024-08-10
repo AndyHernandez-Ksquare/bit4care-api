@@ -2,12 +2,8 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
-  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,9 +14,6 @@ import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IsUserGuard } from './guards/is-user.guard';
-import { RolesGuard } from '../auth/guards/role.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { UserRole } from '@prisma/client';
 
 @Controller('user')
 export class UsersController {

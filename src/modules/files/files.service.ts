@@ -65,7 +65,7 @@ export class FilesService implements OnModuleInit {
     const key = `${isImage ? 'image' : 'video'}/${type}/${userId}/${uuidv4()}`;
 
     // Save file information to database
-    let fileData: Partial<File> = {
+    const fileData: Partial<File> = {
       key,
       name,
       type,
