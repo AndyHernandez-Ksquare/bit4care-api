@@ -23,8 +23,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Zip The Application
-        run: zip -r app.zip .
+      # - name: Zip The Application
+      #   run: zip -r app.zip .
 
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v22
@@ -35,4 +35,4 @@ jobs:
           environment_name: ${{ secrets.EB_DEV_ENVIRONMENT_NAME}}
           version_label: ${{ github.sha }}
           region: ${{ secrets.AWS_REGION}}
-          deployment_package: app.zip
+          deployment_package: docker-compose.yml
