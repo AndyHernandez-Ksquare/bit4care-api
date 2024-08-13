@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./
 
-RUN npm install --production
+RUN npm install --omit=dev
 
 EXPOSE 3000
 
