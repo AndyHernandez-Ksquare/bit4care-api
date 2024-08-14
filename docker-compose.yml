@@ -15,13 +15,31 @@ services:
 
   app:
     build: .
+    # These envs come from beanstalk env
+    #  Add the rest of env variables here
     environment:
-      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@my_postgres_db:5432/bid4care?schema=public
+      DATABASE_URL: postgres://bid4care-dev:${POSTGRES_PASSWORD}@my_postgres_db:5432/bid4care?schema=public
       DATABASE_HOST: my_postgres_db
       DATABASE_PORT: 5432
-      DATABASE_USER: bid4care-dev
-      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
-      DATABASE_NAME: bid4care
+      POSTGRES_USER: bid4care-dev
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: bid4care
+      FRONTEND_URL: ${FRONTEND_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      NODE_ENV: ${NODE_ENV}
+      STRIPE_CLIENT_ID: ${STRIPE_CLIENT_ID}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_REDIRECT_URI: ${STRIPE_REDIRECT_URI}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
     depends_on:
       - postgres
     ports:
