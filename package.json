@@ -12,6 +12,7 @@
     "watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
+    "start:migrate:prod": "prisma migrate deploy && npm run start:prod",
     "makeMigration": "node scripts/updateSchema.js",
     "migrate": "npx prisma migrate dev",
     "seed": "ts-node prisma/seed.ts",

@@ -4,21 +4,28 @@ FROM node:18-alpine as build
 WORKDIR /app
 
 COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install app dependencies
 RUN npm install
 
 COPY . .
+
 RUN npm run build
+
 
 # Stage 2: Create the development image
 FROM node:18-alpine as development
 
 WORKDIR /app
 
+COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./
+COPY --from=build /app/prisma ./prisma
 
 RUN npm install --omit=dev
 
 EXPOSE 3000
 
-CMD ["node", "dist/src/main"]
+CMD [ "npm", "run", "start:migrate:prod" ]
