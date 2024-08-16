@@ -7,11 +7,13 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Install app dependencies
-RUN npm install
+RUN npm i
 
 COPY . .
 
 RUN npm run build
+
+RUN npm prune --production
 
 
 # Stage 2: Create the development image
@@ -24,7 +26,7 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/prisma ./prisma
 
-RUN npm install --omit=dev
+RUN npm i --omit=dev
 
 EXPOSE 3000
 

@@ -25,4 +25,5 @@ export async function bootstrap() {
     next();
   });
   await app.listen(config.api.port);
+  console.info(`Application is running on: ${await app.getUrl()}`);
 }

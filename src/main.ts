@@ -5,7 +5,6 @@ import * as morgan from 'morgan';
 import { NextFunction, Response } from 'express';
 import * as session from 'express-session';
 import { config } from './config';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
@@ -36,5 +35,6 @@ async function bootstrap() {
   );
 
   await app.listen(config.api.port);
+  console.info(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
