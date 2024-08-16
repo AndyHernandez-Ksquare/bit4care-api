@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as morgan from 'morgan';
 import { NextFunction, Response } from 'express';
+import { config } from './config';
 
 export async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,5 +24,5 @@ export async function bootstrap() {
     );
     next();
   });
-  await app.listen(3000);
+  await app.listen(config.api.port);
 }
