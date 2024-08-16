@@ -11,7 +11,6 @@
           "value": "postgres://bid4care-dev:${POSTGRES_PASSWORD}@postgres:5432/bid4care?schema=public"
         },
         { "name": "DATABASE_HOST", "value": "postgres" },
-        { "name": "DATABASE_PORT", "value": "5432" },
         { "name": "POSTGRES_USER", "value": "bid4care-dev" },
         { "name": "POSTGRES_PASSWORD", "value": "${POSTGRES_PASSWORD}" },
         { "name": "POSTGRES_DB", "value": "bid4care" },
