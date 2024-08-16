@@ -1,5 +1,5 @@
 # Stage 1: Build the NestJS application
-FROM node:18-alpine as build
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -17,14 +17,14 @@ RUN npm prune --production
 
 
 # Stage 2: Create the development image
-FROM node:18-alpine as development
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/package*.json ./
-COPY --from=build /app/prisma ./prisma
+COPY --from=0 /app/node_modules ./node_modules
+COPY --from=0 /app/dist ./dist
+COPY --from=0 /app/package*.json ./
+COPY --from=0 /app/prisma ./prisma
 
 RUN npm i --omit=dev
 
