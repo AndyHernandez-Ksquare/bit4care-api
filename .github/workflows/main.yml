@@ -57,4 +57,4 @@ jobs:
           environment_name: ${{ secrets.EB_DEV_ENVIRONMENT_NAME}}
           version_label: ${{ github.sha }}
           region: ${{ secrets.AWS_REGION}}
-          # deployment_package: Dockerrun.aws.json
+          deployment_package: Dockerrun.aws.json
