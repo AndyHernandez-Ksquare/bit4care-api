@@ -20,6 +20,7 @@ services:
     build: .
     # These envs come from beanstalk env
     #  Add the rest of env variables here
+    # image: ah2002/bid4care-dev:latest
     environment:
       DATABASE_URL: postgres://bid4care-dev:${POSTGRES_PASSWORD}@postgres:5432/bid4care?schema=public
       DATABASE_HOST: my_postgres_db
