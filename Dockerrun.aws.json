@@ -1,10 +1,12 @@
 {
-  "AWSEBDockerrunVersion": 2,
+  "AWSEBDockerrunVersion": 3,
   "containerDefinitions": [
     {
       "name": "app",
       "image": "ah2002/bid4care-dev:latest",
-      "essential": true,
+      "essential": false,
+      "hostname": "app",
+      "memory": 500,
       "environment": [
         {
           "name": "DATABASE_URL",
@@ -45,7 +47,9 @@
     {
       "name": "postgres",
       "image": "postgres:14",
-      "essential": true,
+      "essential": false,
+      "hostname": "postgres",
+      "memory": 300,
       "environment": [
         { "name": "POSTGRES_USER", "value": "bid4care-dev" },
         { "name": "POSTGRES_PASSWORD", "value": "${POSTGRES_PASSWORD}" },
