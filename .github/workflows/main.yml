@@ -36,8 +36,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/bid4care-dev:${{ github.sha }} .
-          docker push ${{ secrets.DOCKER_USERNAME }}/bid4care-dev:${{ github.sha }}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/bid4care-dev:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/bid4care-dev:latest
 
       # - name: Install Dependencies
       #   run: npm install
