@@ -1,1 +1,1 @@
-web: npm install && npx prisma generate && npm run start:migrate:prod
+web: npm ci && npx prisma generate && npm run start:prod
