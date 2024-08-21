@@ -31,6 +31,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@prisma/client": "^5.14.0",
+    "@prisma/prisma-fmt-wasm": "4.17.0-16.27eb2449f178cd9fe1a4b892d732cc4795f75085",
     "aws-sdk": "^2.1637.0",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
