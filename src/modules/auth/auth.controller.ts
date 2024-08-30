@@ -24,10 +24,7 @@ export class AuthController {
       confirmationCodeBody.recipient,
     );
 
-    await this.authService.sendSms(
-      confirmationCodeBody.recipient,
-      `This is youd Bid4Care confirmation code: ${code}`,
-    );
+    await this.authService.sendSms(confirmationCodeBody.recipient, `${code}`);
   }
 
   @Put('client/verify-code')

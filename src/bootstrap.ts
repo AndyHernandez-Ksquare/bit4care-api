@@ -6,6 +6,7 @@ import { NextFunction, Response } from 'express';
 import { config } from './config';
 
 export async function bootstrap() {
+
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(morgan('dev')); // or 'tiny', 'short', 'dev', etc.

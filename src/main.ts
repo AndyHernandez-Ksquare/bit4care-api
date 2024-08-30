@@ -6,29 +6,24 @@ import { NextFunction, Response } from 'express';
 import * as session from 'express-session';
 import { config } from './config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.use(morgan('dev')); // or 'tiny', 'short', 'dev', etc.
 
   // CORS
-  app.use(function (_, res: Response, next: NextFunction) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, PATCH, DELETE');
-    res.header(
-      'Access-Control-Allow-Headers',
+  app.enableCors({
+    origin: '*', // Adjust this according to your needs
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders:
       'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-    );
-    res.header(
-      'Access-Control-Expose-Headers',
-      'Content-Count, Content-Disposition, Content-Type',
-    );
-    next();
+    exposedHeaders: 'Content-Count, Content-Disposition, Content-Type',
   });
 
   app.use(
     session({
-      secret: 'your-secret-key',
+      secret: config.jwt.secret,
       resave: false,
       saveUninitialized: false,
       cookie: { secure: process.env.NODE_ENV === 'production' },
