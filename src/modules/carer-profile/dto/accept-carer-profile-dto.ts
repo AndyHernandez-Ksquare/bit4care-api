@@ -1,10 +1,4 @@
-import {
-  IsString,
-  IsBoolean,
-  IsInt,
-  IsNotEmpty,
-  IsEmail,
-} from 'class-validator';
+import { IsBoolean } from 'class-validator';
 
 export class AcceptCarerProfileDto {
   @IsBoolean()

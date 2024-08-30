@@ -1,0 +1,41 @@
+name: CICD
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build-and-deploy:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Build
+        run: npm run build
+
+      - name: Zip The Application
+        run: zip -r app.zip .
+
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: ${{ secrets.EB_APPLICATION_NAME}}
+          environment_name: ${{ secrets.EB_DEV_ENVIRONMENT_NAME}}
+          version_label: ${{ github.sha }}
+          region: ${{ secrets.AWS_REGION}}
+          deployment_package: app.zip

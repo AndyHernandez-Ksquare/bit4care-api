@@ -10,6 +10,7 @@ import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
 import { CreatePaymentIntentDto } from '../payments/dto/create-payment-intent.dto';
 import { config } from 'src/config';
+import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class StripeService {

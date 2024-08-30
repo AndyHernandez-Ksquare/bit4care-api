@@ -3,10 +3,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthPayloadDto } from './dto/auth-payload.dto';
 import { PrismaService } from 'src/prisma.service';
-import * as AWS from 'aws-sdk';
-import { config } from 'src/config';
 import { CreateConfirmationCode } from './dto/create-confirmation-code';
-import { encrypt, decrypt } from '../../common/utils';
 import { ChangePasswordDto } from './dto/change-password-dto';
 import { TwilioService } from './twilio.service';
 

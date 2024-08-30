@@ -10,6 +10,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { PrismaClientExceptionFilter } from './prisma.filter';
 import { ApplicationRequestModule } from './modules/application-request/application-request.module';
 import { FilesModule } from './modules/files/files.module';
+import { HealthController } from './modules/health/health.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { FilesModule } from './modules/files/files.module';
     ApplicationRequestModule,
     FilesModule,
   ],
-  controllers: [PaymentsController],
+  controllers: [PaymentsController, HealthController],
   //   controllers: [UsersController], // Add your controllers here
   providers: [
     {

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+
+import {
+  Controller,
+  Get,
+  Query,
+  Redirect,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { Request } from 'express';
 import { JwtGuard } from '../auth/guards/jwt.guard';
@@ -9,6 +17,7 @@ import { config } from 'src/config';
 import { RolesGuard } from '../auth/guards/role.guard';
 import { UserRole, Client } from '@prisma/client';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('stripe')
 export class StripeController {
@@ -93,6 +102,16 @@ export class StripeController {
   // // Test req: http://localhost:3000/stripe/connect/CLIENT/andyhernandez5102@gmail.com
   // async connectStripeAccount(@Req() req: Request) {
   //   const { userRole, userEmail } = req.params;
+
+  @Get('connect/:userRole/:userEmail')
+  @ApiOperation({ summary: 'Stripe SSO' })
+  @ApiResponse({
+    description: 'This is used mainly by the colaborators so they can receive ',
+  })
+  @Redirect()
+  // Test req: http://localhost:3000/stripe/connect/CLIENT/andyhernandez5102@gmail.com
+  async connectStripeAccount(@Req() req: Request) {
+    const { userRole, userEmail } = req.params;
 
   //   const state = `${uuidv4()}/${userRole}/${userEmail}`;
   //   req.session.state = state;
