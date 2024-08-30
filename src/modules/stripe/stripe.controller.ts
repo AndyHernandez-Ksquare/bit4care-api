@@ -10,6 +10,7 @@ import { StripeService } from './stripe.service';
 import { config } from 'src/config';
 import { v4 as uuidv4 } from 'uuid';
 import { Request } from 'express';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('stripe')
 export class StripeController {
@@ -42,6 +43,10 @@ export class StripeController {
 
   // Oauth
   @Get('connect/:userRole/:userEmail')
+  @ApiOperation({ summary: 'Stripe SSO' })
+  @ApiResponse({
+    description: 'This is used mainly by the colaborators so they can receive ',
+  })
   @Redirect()
   // Test req: http://localhost:3000/stripe/connect/CLIENT/andyhernandez5102@gmail.com
   async connectStripeAccount(@Req() req: Request) {

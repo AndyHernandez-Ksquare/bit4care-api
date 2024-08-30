@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 import { NextFunction, Response } from 'express';
 import * as session from 'express-session';
 import { config } from './config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
@@ -33,6 +34,16 @@ async function bootstrap() {
       cookie: { secure: process.env.NODE_ENV === 'production' },
     }),
   );
+
+  // Swagger configuration
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('API Documentation')
+    .setDescription('The API description')
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document);
 
   await app.listen(config.api.port);
   console.info(`Application is running on: ${await app.getUrl()}`);
