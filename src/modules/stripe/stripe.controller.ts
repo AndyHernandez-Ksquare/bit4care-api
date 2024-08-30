@@ -1,11 +1,11 @@
-
 import {
+  Body,
   Controller,
   Get,
-  Query,
+  Post,
   Redirect,
   Req,
-  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 import { Request } from 'express';
@@ -113,28 +113,29 @@ export class StripeController {
   async connectStripeAccount(@Req() req: Request) {
     const { userRole, userEmail } = req.params;
 
-  //   const state = `${uuidv4()}/${userRole}/${userEmail}`;
-  //   req.session.state = state;
+    //   const state = `${uuidv4()}/${userRole}/${userEmail}`;
+    //   req.session.state = state;
 
-  //   const clientId = config.stripe.clientId;
-  //   const redirectUri = config.stripe.redirectUri;
+    //   const clientId = config.stripe.clientId;
+    //   const redirectUri = config.stripe.redirectUri;
 
-  //   const url = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${clientId}&scope=read_write&state=${state}&redirect_uri=${redirectUri}`;
+    //   const url = `https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${clientId}&scope=read_write&state=${state}&redirect_uri=${redirectUri}`;
 
-  //   return { url };
-  // }
+    //   return { url };
+    // }
 
-  // @Get('oauth/callback')
-  // async handleStripeCallback(
-  //   @Query('code') code: string,
-  //   @Query('state') state: string,
-  //   @Req() req: Request,
-  // ) {
-  //   if (state !== req.session.state) {
-  //     throw new UnauthorizedException();
-  //   }
-  //   const [_, userRole, userEmail] = state.split('/');
+    // @Get('oauth/callback')
+    // async handleStripeCallback(
+    //   @Query('code') code: string,
+    //   @Query('state') state: string,
+    //   @Req() req: Request,
+    // ) {
+    //   if (state !== req.session.state) {
+    //     throw new UnauthorizedException();
+    //   }
+    //   const [_, userRole, userEmail] = state.split('/');
 
-  //   return this.StripeService.connectStripeAccount(code, userRole, userEmail);
-  // }
+    //   return this.StripeService.connectStripeAccount(code, userRole, userEmail);
+    // }
+  }
 }
