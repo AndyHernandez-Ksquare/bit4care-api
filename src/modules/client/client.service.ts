@@ -46,7 +46,7 @@ export class ClientService {
       data: {
         ...createClientDto,
         role: UserRole.CLIENT,
-        client: { create: { is_active: false } },
+        client: { create: { is_active: true } },
       },
       select: {
         id: true,

@@ -20,17 +20,34 @@ import { Request } from 'express';
 import { JwtPayload } from 'src/interfaces/jwt-payload';
 import { AcceptCarerProfileDto } from './dto/accept-carer-profile-dto';
 import { IsCarerActiveGuard } from './guards/is-carer-active.guard';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { carerProfileSample } from './swagger/carer-sample-objects';
 
+@ApiTags('Carer Profile')
 @Controller('carer-profile')
 export class CarerProfileController {
   constructor(private readonly carerProfileService: CarerProfileService) {}
 
   @Post()
+  @ApiOperation({
+    summary: 'Create carer/colaborator profile',
+  })
+  @ApiBody({
+    type: CreateCarerProfileDto,
+  })
   create(@Body() createCarerProfileDto: CreateCarerProfileDto) {
     return this.carerProfileService.create(createCarerProfileDto);
   }
 
   @Get()
+  @ApiOperation({
+    summary: 'Find All carer/colaborator profile',
+    description: 'Endpoint for admins and clients only',
+  })
+  @ApiResponse({
+    status: 200,
+    example: [carerProfileSample],
+  })
   @UseGuards(JwtGuard)
   @Roles(UserRole.ADMIN, UserRole.CLIENT)
   findAll() {
@@ -45,6 +62,14 @@ export class CarerProfileController {
   }
 
   @Get('admin/list-carers-pedning-to-approve')
+  @ApiOperation({
+    summary: 'Find All carer/colaborator pending for approval',
+    description: 'Endpoint for admins only',
+  })
+  @ApiResponse({
+    status: 200,
+    example: [{ ...carerProfileSample, is_approved: false }],
+  })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   handleFindAllCarersPendingToApprove() {
@@ -52,6 +77,10 @@ export class CarerProfileController {
   }
 
   @Patch('admin/desactivate-carer/:carerId')
+  @ApiOperation({
+    summary: 'Desactivate carer',
+    description: 'Endpoint for admins only',
+  })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   handleDesactivateCarer(@Param('carerId') carerId: string) {
@@ -59,6 +88,9 @@ export class CarerProfileController {
   }
 
   @Patch('self')
+  @ApiOperation({
+    summary: 'Patch self',
+  })
   @UseGuards(JwtGuard, RolesGuard, IsCarerActiveGuard)
   @Roles(UserRole.CARER)
   update(
@@ -71,6 +103,10 @@ export class CarerProfileController {
   }
 
   @Patch('admin/review-carer/:carerId')
+  @ApiOperation({
+    summary: 'Endpoint to approve or deny carer',
+    description: 'Endpoint for admin only',
+  })
   @UseGuards(JwtGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   handleApproveCarer(
@@ -84,6 +120,10 @@ export class CarerProfileController {
   }
 
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'Delete carer',
+    description: 'Endpoint for admin only',
+  })
   @Roles(UserRole.ADMIN)
   @Delete('admin/:id')
   remove(@Param('id') id: string) {

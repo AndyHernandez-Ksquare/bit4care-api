@@ -1,16 +1,10 @@
 // stripe.service.ts
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import Stripe from 'stripe';
 import { PrismaService } from 'src/prisma.service';
 import { STRIPE_CLIENT } from './constants';
 import { CreatePaymentIntentDto } from '../payments/dto/create-payment-intent.dto';
 import { config } from 'src/config';
-import { UserRole } from '@prisma/client';
 
 @Injectable()
 export class StripeService {
@@ -43,7 +37,7 @@ export class StripeService {
     email: string,
   ): Promise<{ client_secret: string }> {
     const { amount } = CreatePaymentIntentDto;
-    const user = await this.prisma.user.findUnique({
+    await this.prisma.user.findUnique({
       where: { email },
       include: { stripeAccount: true },
     });
