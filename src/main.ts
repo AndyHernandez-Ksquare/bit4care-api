@@ -2,10 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as morgan from 'morgan';
-import { NextFunction, Response } from 'express';
 import * as session from 'express-session';
 import { config } from './config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Request, Response, NextFunction } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,7 +17,7 @@ async function bootstrap() {
     origin: '*', // Adjust this according to your needs
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders:
-      'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Custom-Header',
     exposedHeaders: 'Content-Count, Content-Disposition, Content-Type',
   });
 
@@ -29,6 +29,14 @@ async function bootstrap() {
       cookie: { secure: process.env.NODE_ENV === 'production' },
     }),
   );
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(204);
+    } else {
+      next();
+    }
+  });
 
   // Swagger configuration
   const swaggerConfig = new DocumentBuilder()
